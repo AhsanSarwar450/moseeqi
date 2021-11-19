@@ -21,7 +21,7 @@ export function WithSubnavigation() {
 			>
 				<Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
 					<Text textColor="white" fontFamily={'heading'}>
-						Moseeqi
+						moseeqi
 					</Text>
 
 					<Flex display={{ base: 'none', md: 'flex' }} ml={10}>
