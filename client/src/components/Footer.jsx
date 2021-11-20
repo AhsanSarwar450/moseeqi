@@ -15,7 +15,7 @@ export const Footer = () => {
 				<Text color="white">Cookies</Text>
 				<Text color="white">Support</Text>
 				<Spacer />
-				<Text color="white">Moseeqi</Text>
+				<Text color="white">&copy; 2021 Moseeqi</Text>
 			</HStack>
 		</Box>
 	);

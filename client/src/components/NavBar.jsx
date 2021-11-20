@@ -2,7 +2,7 @@ import { Box, Flex, Text, Button, Stack, Icon, Link, Popover, PopoverTrigger, Po
 import { ChevronRightIcon } from '@chakra-ui/icons';
 import { Link as RouterLink } from 'react-router-dom';
 
-export function WithSubnavigation() {
+export function Navbar() {
 	return (
 		<Box>
 			<Flex
@@ -25,7 +25,7 @@ export function WithSubnavigation() {
 					</Text>
 
 					<Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-						<Navbar />
+						<NavbarItems />
 					</Flex>
 				</Flex>
 
@@ -46,7 +46,7 @@ export function WithSubnavigation() {
 	);
 }
 
-const Navbar = () => {
+const NavbarItems = () => {
 	return (
 		<Stack direction={'row'} spacing={4}>
 			{NAV_ITEMS.map((navItem) => (
@@ -70,7 +70,7 @@ const Navbar = () => {
 						{navItem.children && (
 							<PopoverContent
 								border={0}
-								boxShadow={'xl'}
+								boxShadow={'lg'}
 								color="white"
 								bg="brand.secondary"
 								p={4}
@@ -128,7 +128,7 @@ const NAV_ITEMS = [
 			},
 			{
 				label: 'Artists',
-				subLabel: 'Established Up-and-coming Artists',
+				subLabel: 'Established and up-and-coming Artists',
 				href: '#'
 			}
 		]
