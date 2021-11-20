@@ -1,28 +1,16 @@
-import {
-	Box,
-	Flex,
-	Text,
-	IconButton,
-	Button,
-	Stack,
-	Icon,
-	Link,
-	Popover,
-	PopoverTrigger,
-	PopoverContent,
-	useDisclosure
-} from '@chakra-ui/react';
-import { HamburgerIcon, CloseIcon, ChevronRightIcon } from '@chakra-ui/icons';
+import { Box, Flex, Text, Button, Stack, Icon, Link, Popover, PopoverTrigger, PopoverContent } from '@chakra-ui/react';
+import { ChevronRightIcon } from '@chakra-ui/icons';
 import { Link as RouterLink } from 'react-router-dom';
 
-export function WithSubnavigation() {
-	const { isOpen, onToggle } = useDisclosure();
-
+export function Navbar() {
 	return (
 		<Box>
 			<Flex
 				bg="brand.primary"
 				minH={'60px'}
+				position="fixed"
+				top={0}
+				w="full"
 				py={{ base: 2 }}
 				px={{ base: 4 }}
 				align={'center'}
@@ -31,21 +19,13 @@ export function WithSubnavigation() {
 				paddingTop={5}
 				paddingBottom={5}
 			>
-				<Flex flex={{ base: 1, md: 'auto' }} ml={{ base: -2 }} display={{ base: 'flex', md: 'none' }}>
-					<IconButton
-						onClick={onToggle}
-						icon={isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />}
-						variant={'ghost'}
-						aria-label={'Toggle Navigation'}
-					/>
-				</Flex>
 				<Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
 					<Text textColor="white" fontFamily={'heading'}>
-						Moseeqi
+						moseeqi
 					</Text>
 
 					<Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-						<Navbar />
+						<NavbarItems />
 					</Flex>
 				</Flex>
 
@@ -66,7 +46,7 @@ export function WithSubnavigation() {
 	);
 }
 
-const Navbar = () => {
+const NavbarItems = () => {
 	return (
 		<Stack direction={'row'} spacing={4}>
 			{NAV_ITEMS.map((navItem) => (
@@ -90,7 +70,7 @@ const Navbar = () => {
 						{navItem.children && (
 							<PopoverContent
 								border={0}
-								boxShadow={'xl'}
+								boxShadow={'lg'}
 								color="white"
 								bg="brand.secondary"
 								p={4}
@@ -148,7 +128,7 @@ const NAV_ITEMS = [
 			},
 			{
 				label: 'Artists',
-				subLabel: 'Established Up-and-coming Artists',
+				subLabel: 'Established and up-and-coming Artists',
 				href: '#'
 			}
 		]
