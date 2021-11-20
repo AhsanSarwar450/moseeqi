@@ -1,4 +1,16 @@
-import { Box, Flex, Text, Button, Stack, Icon, Link, Popover, PopoverTrigger, PopoverContent } from '@chakra-ui/react';
+import {
+	Box,
+	Flex,
+	Text,
+	Button,
+	Stack,
+	Icon,
+	Link,
+	Spacer,
+	Popover,
+	PopoverTrigger,
+	PopoverContent
+} from '@chakra-ui/react';
 import { ChevronRightIcon } from '@chakra-ui/icons';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -23,17 +35,24 @@ export function Navbar() {
 					<Text textColor="white" fontFamily={'heading'}>
 						moseeqi
 					</Text>
-
+					<Spacer />
 					<Flex display={{ base: 'none', md: 'flex' }} ml={10}>
 						<NavbarItems />
 					</Flex>
 				</Flex>
 
-				<Stack flex={{ base: 1, md: 0 }} justify={'flex-end'} direction={'row'} spacing={6}>
+				<Stack flex={{ base: 1, md: 0 }} justify={'flex-end'} direction={'row'} spacing={10}>
 					<RouterLink to="/login">
-						<Button textColor="white" fontWeight={400} variant={'link'} href={'/login'} paddingTop="5px">
+						{/* <Button
+							textColor="white"
+							fontSize={'sm'}
+							fontWeight={400}
+							variant={'link'}
+							href={'/login'}
+							paddingTop="7px"
+						>
 							Login
-						</Button>
+						</Button> */}
 					</RouterLink>
 					<RouterLink to="/signup">
 						<Button colorScheme="secondary" size="sm" textColor="white ">
@@ -48,7 +67,7 @@ export function Navbar() {
 
 const NavbarItems = () => {
 	return (
-		<Stack direction={'row'} spacing={4}>
+		<Stack direction={'row'} spacing={10}>
 			{NAV_ITEMS.map((navItem) => (
 				<Box key={navItem.label}>
 					<Popover trigger={'hover'} placement={'bottom-start'}>
@@ -149,7 +168,7 @@ const NAV_ITEMS = [
 		]
 	},
 	{
-		label: 'Create',
+		label: 'Login',
 		href: '#'
 	}
 ];
