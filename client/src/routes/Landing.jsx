@@ -6,8 +6,8 @@ import { Footer } from '../components/Footer';
 export const Landing = () => (
 	<div>
 		<Box h="100vh" w="full" bg="brand.primary">
-			{/* <Navbar /> */}
-			<MusicVisualizer />
+			<Navbar />
+			{/* <MusicVisualizer /> */}
 		</Box>
 		<Box h="100vh" w="full" bg="brand.secondary" />
 		<Footer />

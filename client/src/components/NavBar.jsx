@@ -26,33 +26,23 @@ export function Navbar() {
 				py={{ base: 2 }}
 				px={{ base: 4 }}
 				align={'center'}
+				justify="space-between"
 				paddingLeft={20}
 				paddingRight={20}
 				paddingTop={5}
 				paddingBottom={5}
 			>
-				<Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-					<Text textColor="white" fontFamily={'heading'}>
-						moseeqi
-					</Text>
-					<Spacer />
-					<Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-						<NavbarItems />
-					</Flex>
-				</Flex>
+				<Text textColor="white" fontFamily={'heading'}>
+					moseeqi
+				</Text>
 
-				<Stack flex={{ base: 1, md: 0 }} justify={'flex-end'} direction={'row'} spacing={10}>
+				<NavbarItems />
+
+				<Stack flex={{ base: 1, md: 0 }} justify={'flex-end'} direction={'row'} spacing={5}>
 					<RouterLink to="/login">
-						{/* <Button
-							textColor="white"
-							fontSize={'sm'}
-							fontWeight={400}
-							variant={'link'}
-							href={'/login'}
-							paddingTop="7px"
-						>
+						<Button colorScheme="secondary" variant="outline" size="sm" textColor="white ">
 							Login
-						</Button> */}
+						</Button>
 					</RouterLink>
 					<RouterLink to="/signup">
 						<Button colorScheme="secondary" size="sm" textColor="white ">
@@ -72,18 +62,20 @@ const NavbarItems = () => {
 				<Box key={navItem.label}>
 					<Popover trigger={'hover'} placement={'bottom-start'}>
 						<PopoverTrigger>
-							<Link
-								p={2}
-								color="white"
-								fontSize={'sm'}
-								fontWeight={500}
-								_hover={{
-									textDecoration: 'none',
-									color: 'secondary.300'
-								}}
-							>
-								{navItem.label}
-							</Link>
+							<RouterLink to={navItem.href ? navItem.href : '#'}>
+								<Text
+									p={2}
+									color="white"
+									fontSize={'sm'}
+									fontWeight={500}
+									_hover={{
+										textDecoration: 'none',
+										color: 'secondary.300'
+									}}
+								>
+									{navItem.label}
+								</Text>
+							</RouterLink>
 						</PopoverTrigger>
 
 						{navItem.children && (
@@ -168,7 +160,7 @@ const NAV_ITEMS = [
 		]
 	},
 	{
-		label: 'Login',
-		href: '#'
+		label: 'Studio',
+		href: '/studio'
 	}
 ];
