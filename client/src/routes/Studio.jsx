@@ -16,7 +16,7 @@ export const Studio = () => {
 	};
 
 	return (
-		<Flex height="100vh" width="full" padding={0} margin={0} spacing={0} overflow="hidden" flexDirection="column">
+		<Flex height="100vh" width="full" spacing={0} overflow="hidden" flexDirection="column">
 			{/* <Editor /> */}
 			<StudioEditBar />
 			<PianoRoll isPlaying={isPlaying} />
