@@ -1,14 +1,12 @@
-import { Box, Spacer, Flex, Container, VStack, HStack, ButtonGroup, Button } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
 // import { PlayBackController } from '../components/studio/PlaybackController';
-import { StudioEditBar } from '../components/studio/StudioEditBar';
 import { PlayBackController } from '../components/studio/PlaybackController';
-import { Midi } from '../components/Midi';
-import { Sequencer } from '../components/Sequencer';
 import { PianoRoll } from '../components/studio/PianoRoll';
 import { useState } from 'react';
 
 export const Studio = () => {
 	const [ isPlaying, setIsPlaying ] = useState(false);
+	const [ bpm, setBPM ] = useState(120);
 
 	const ToggleIsPlaying = () => {
 		console.log('toggle');
@@ -18,9 +16,9 @@ export const Studio = () => {
 	return (
 		<Flex height="100vh" width="full" spacing={0} overflow="hidden" flexDirection="column">
 			{/* <Editor /> */}
-			<StudioEditBar />
-			<PianoRoll isPlaying={isPlaying} />
-			<PlayBackController isPlaying={isPlaying} toggleIsPlaying={ToggleIsPlaying} />
+			{/* <StudioEditBar setNoteDivisor={setNoteDivisor} /> */}
+			<PianoRoll isPlaying={isPlaying} bpm={bpm} />
+			<PlayBackController isPlaying={isPlaying} toggleIsPlaying={ToggleIsPlaying} setBPM={setBPM} />
 			{/* <Midi /> */}
 			{/* <Sequencer />*/}
 		</Flex>
