@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import {
 	HStack,
 	VStack,
@@ -13,8 +13,28 @@ import {
 import { Song, Track, Instrument } from 'reactronica';
 import _ from 'lodash';
 import { AcousticGrandPiano } from '@Instruments/AcousticGrandPiano';
+// import { Grid, AutoSizer } from 'react-virtualized';
+import { StickyGrid } from '../StickyGrid';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 const notes = [
+	'A0',
+	'A#0',
+	'B0',
+
+	'C1',
+	'C#1',
+	'D1',
+	'D#1',
+	'E1',
+	'F1',
+	'F#1',
+	'G1',
+	'G#1',
+	'A1',
+	'A#1',
+	'B1',
+
 	'C2',
 	'C#2',
 	'D2',
@@ -27,6 +47,7 @@ const notes = [
 	'A2',
 	'A#2',
 	'B2',
+
 	'C3',
 	'C#3',
 	'D3',
@@ -34,40 +55,67 @@ const notes = [
 	'E3',
 	'F3',
 	'F#3',
-	'G3'
-	// 'G#3',
-	// 'A3',
-	// 'A#3',
-	// 'B3',
-	// 'C4',
-	// 'C#4',
-	// 'D4',
-	// 'D#4',
-	// 'E4',
-	// 'F4',
-	// 'F#4',
-	// 'G4',
-	// 'G#4',
-	// 'A4',
-	// 'A#4',
-	// 'B4',
-	// 'C5',
-	// 'C#5',
-	// 'D5',
-	// 'D#5',
-	// 'E5',
-	// 'F5',
-	// 'F#5',
-	// 'G5',
-	// 'G#5',
-	// 'A5',
-	// 'A#5',
-	// 'B5'
+	'G3',
+	'G#3',
+	'A3',
+	'A#3',
+	'B3',
+
+	'C4',
+	'C#4',
+	'D4',
+	'D#4',
+	'E4',
+	'F4',
+	'F#4',
+	'G4',
+	'G#4',
+	'A4',
+	'A#4',
+	'B4',
+
+	'C5',
+	'C#5',
+	'D5',
+	'D#5',
+	'E5',
+	'F5',
+	'F#5',
+	'G5',
+	'G#5',
+	'A5',
+	'A#5',
+	'B5',
+
+	'C6',
+	'C#6',
+	'D6',
+	'D#6',
+	'E6',
+	'F6',
+	'F#6',
+	'G6',
+	'G#6',
+	'A6',
+	'A#6',
+	'B6',
+
+	'C7',
+	'C#7',
+	'67',
+	'D#7',
+	'E7',
+	'F7',
+	'F#7',
+	'G7',
+	'G#7',
+	'A7',
+	'A#7',
+	'B7'
 ];
 
 const numRows = notes.length;
 const colors = notes.map((x) => (x.includes('#') ? 'primary.600' : 'primary.500'));
-const labelColors = notes.map((x) => (x.includes('#') ? 'primary.400' : 'primary.200'));
 
 const LabelPanel = ({ numNotes, width, height, currentStepIndex }) => {
 	return (
@@ -109,85 +157,6 @@ const TimeLabel = ({ noteNum, divisionWidth, divisions, currentStepIndex, height
 	);
 };
 
-const NotesPanel = ({ width, height, setPreviewNote }) => {
-	return (
-		<VStack spacing={0} position="sticky" left={0} zIndex={1000}>
-			{[ ...Array(numRows) ].map((e2, y) => (
-				<Box
-					key={y}
-					width={width}
-					height={height}
-					fontSize="sm"
-					textColor="white"
-					textAlign="center"
-					verticalAlign="middle"
-					lineHeight={height}
-					bgColor={labelColors[y]}
-					borderWidth="1px"
-					borderColor="primary.100"
-					onMouseDown={() => setPreviewNote([ { name: notes[y] } ])}
-					onMouseUp={() => setPreviewNote(null)}
-				>
-					{notes[y]}
-				</Box>
-			))}
-		</VStack>
-	);
-};
-
-const Cell = ({ height, width, filledWidth, bgColor, onClick, onFilledClick, duration }) => {
-	const [ isActive, setActive ] = useState(false);
-	const [ filledLength, setFilledLength ] = useState(0);
-
-	const onClickHandler = () => {
-		onClick();
-		setFilledLength(filledWidth);
-		setActive(true);
-	};
-
-	return (
-		<div>
-			<Box
-				width={width}
-				height={height}
-				onClick={onClickHandler}
-				bgColor={bgColor}
-				borderWidth="1px"
-				borderColor="primary.100"
-			/>
-			{isActive ? (
-				<FilledCell
-					height={height}
-					width={filledLength}
-					onClick={() => {
-						onFilledClick();
-						setActive(false);
-					}}
-				/>
-			) : null}
-		</div>
-	);
-};
-
-const FilledCell = ({ height, width, x, y, onClick }) => {
-	return (
-		<Box
-			width={width}
-			height={height}
-			onClick={onClick}
-			marginTop={-height}
-			//marginRight={-width / 2}
-			marginRight={-1000}
-			// top={y * height}
-			// left={x * width}
-			bgColor="brand.secondary"
-			borderWidth="1px"
-			borderRadius="5px"
-			borderColor="secondary.100"
-		/>
-	);
-};
-
 const ButtonRadio = (props) => {
 	const { getInputProps, getCheckboxProps } = useRadio(props);
 
@@ -216,20 +185,51 @@ const ButtonRadio = (props) => {
 	);
 };
 
-// const GetInstrument({name})=>{
+const GridCell = ({ data, rowIndex, columnIndex, style }) => {
+	const found = data.chords[columnIndex].find((el) => el.name === notes[rowIndex]);
 
-// 	return
-// }
+	const HandleOnClick = () => {
+		data.onCellClick(columnIndex, rowIndex);
+	};
+
+	const HandleOnFilledClick = () => {
+		data.onFilledClick(columnIndex, rowIndex);
+	};
+
+	return (
+		<Box
+			onClick={found ? null : HandleOnClick}
+			bgColor={colors[rowIndex]}
+			overflowX="visible"
+			zIndex={999 - columnIndex}
+			style={style}
+			borderBottom="1px solid gray"
+			borderRight="1px solid gray"
+		>
+			{found !== undefined ? (
+				<Box
+					borderRadius="5px"
+					borderWidth="1px"
+					borderColor="secondary.700"
+					height="100%"
+					width={`calc(${found.duration * 400}% + ${found.duration * 4}px - 1px)`}
+					bgColor="secondary.500"
+					onClick={HandleOnFilledClick}
+				/>
+			) : null}
+		</Box>
+	);
+};
 
 export const PianoRoll = ({ isPlaying, bpm }) => {
-	const cellWidth = 16;
-	const noteWidth = cellWidth * 4;
+	const cellWidth = 8;
+	const noteWidth = cellWidth * 8;
 	const cellHeight = 6;
-	const numNotes = 2;
-	const options = [ 'Whole', '1/2', '1/4' ];
+	const numNotes = 8;
+	const options = [ 'Whole', '1/2', '1/4', '1/8' ];
 
 	const [ currentStepIndex, setCurrentStepIndex ] = useState(0);
-	const [ numCols, setNumCols ] = useState(numNotes * 4);
+	const [ numCols, setNumCols ] = useState(numNotes * 8);
 	const [ chords, setChords ] = useState(Array(numCols).fill().map(() => Array(0)));
 	// const [ chordsIndex, setChordsIndex ] = useState(Array(numCols).fill().map(() => Array(0)));
 	const [ previewNote, setPreviewNote ] = useState(null);
@@ -241,14 +241,17 @@ export const PianoRoll = ({ isPlaying, bpm }) => {
 		defaultValue: '1/4',
 		onChange: (value) => {
 			if (value === 'Whole') {
-				setNoteLength(cellWidth * 4);
+				setNoteLength(cellWidth * 8);
 				setNoteDivisor(1);
 			} else if (value === '1/2') {
-				setNoteLength(cellWidth * 2);
+				setNoteLength(cellWidth * 4);
 				setNoteDivisor(2);
 			} else if (value === '1/4') {
-				setNoteLength(cellWidth);
+				setNoteLength(cellWidth * 2);
 				setNoteDivisor(4);
+			} else if (value === '1/8') {
+				setNoteLength(cellWidth);
+				setNoteDivisor(8);
 			}
 		}
 	});
@@ -257,8 +260,6 @@ export const PianoRoll = ({ isPlaying, bpm }) => {
 
 	const OnCellClick = (column, row) => {
 		let currentColumn = chords[column];
-		const index = currentColumn.indexOf(notes[row]);
-
 		currentColumn.push({ name: notes[row], duration: 60 * 4 / (bpm * noteDivisor), velocity: 1.0 });
 
 		let newChords = _.cloneDeep(chords);
@@ -266,158 +267,96 @@ export const PianoRoll = ({ isPlaying, bpm }) => {
 		setChords(newChords);
 	};
 
+	// useEffect(
+	// 	() => {
+	// 		console.log(chords);
+	// 	},
+	// 	[ chords ]
+	// );
+
 	const OnFilledCellClick = (column, row) => {
-		let currentColumn = chords[column];
-		const index = currentColumn.indexOf(notes[row]);
-
-		currentColumn.splice(index, 1);
-
 		let newChords = _.cloneDeep(chords);
-		newChords[column] = currentColumn;
+		newChords[column] = chords[column].filter((el) => el.name !== notes[row]);
 		setChords(newChords);
 	};
 
 	return (
-		<Flex
-			height="full"
-			width="full"
-			maxWidth="full"
-			margin={0}
-			padding={0}
-			spacing={0}
-			overflowY="auto"
-			overflowX="auto"
-			flexDirection="column"
-		>
-			<Flex flexDirection="column" spacing={0} position="sticky" top={0} zIndex={9999}>
-				<HStack
-					w="full"
-					height="20px"
-					flexShrink={0}
-					padding={5}
-					spacing={10}
-					bg="brand.primary"
-					position="sticky"
-					left={0}
-				>
-					<HStack {...group} spacing={0}>
-						{options.map((value) => {
-							const radio = getRadioProps({ value });
-							return (
-								<ButtonRadio key={value} {...radio}>
-									{value}
-								</ButtonRadio>
-							);
-						})}
-					</HStack>
+		<Flex flexDirection="column" height="full" width="full">
+			<HStack
+				w="full"
+				height="20px"
+				flexShrink={0}
+				padding={5}
+				spacing={10}
+				bg="brand.primary"
+				position="sticky"
+				left={0}
+			>
+				<HStack {...group} spacing={0}>
+					{options.map((value) => {
+						const radio = getRadioProps({ value });
+						return (
+							<ButtonRadio key={value} {...radio}>
+								{value}
+							</ButtonRadio>
+						);
+					})}
 				</HStack>
-				<LabelPanel
-					numNotes={numNotes}
-					width={cellWidth}
-					height={cellHeight}
-					currentStepIndex={currentStepIndex}
-				/>
-			</Flex>
-
-			<HStack spacing={0}>
-				<NotesPanel width={cellWidth} height={cellHeight} setPreviewNote={setPreviewNote} />
-				{/* 
-				{chords.map((e, x) => (
-					<VStack key={x} spacing={0}>
-						{chords[x].map((e2, y) => (
-							<FilledCell
-								key={y}
-								width={cellWidth}
-								height={cellHeight}
-								x={x}
-								y={notes.indexOf(chords[x][y])}
-								// onClick={() => OnCellClick(x, y)}
-							/>
-						))}
-					</VStack>
-				))} */}
-
-				{[ ...Array(numCols) ].map((e, x) => (
-					<VStack key={x} spacing={0} height="100%" maxWidth={noteWidth} zIndex={999 - x}>
-						{[ ...Array(numRows) ].map((e2, y) => (
-							<Cell
-								key={y}
-								width={cellWidth}
-								filledWidth={noteLength}
-								height={cellHeight}
-								bgColor={colors[y]}
-								duration={2}
-								onClick={() => OnCellClick(x, y)}
-								onFilledClick={() => OnFilledCellClick(x, y)}
-							/>
-						))}
-					</VStack>
-				))}
 			</HStack>
+			<Container
+				height="full"
+				width="full"
+				maxWidth="full"
+				margin={0}
+				padding={0}
+				spacing={0}
+				overflowY="hidden"
+				overflowX="hidden"
+			>
+				<AutoSizer>
+					{({ height, width }) => (
+						<StickyGrid
+							height={height}
+							width={width}
+							columnCount={numCols}
+							rowCount={numRows}
+							rowHeight={30}
+							columnWidth={60}
+							stickyHeight={30}
+							stickyWidth={150}
+							rowHeaderLabels={notes}
+							activeRowIndex={currentStepIndex}
+							itemData={{ onCellClick: OnCellClick, onFilledClick: OnFilledCellClick, chords: chords }}
+						>
+							{GridCell}
+						</StickyGrid>
+					)}
+				</AutoSizer>
 
-			<Song isPlaying={isPlaying} bpm={bpm}>
-				<Track
-					steps={chords}
-					// Callback triggers on every step
-					onStepPlay={(stepNotes, index) => {
-						setCurrentStepIndex(index);
-					}}
-				>
-					<Instrument
-						type="sampler"
-						samples={AcousticGrandPiano}
-						envelope={{
-							attack: 0.3,
-							release: 0.3
+				<Song isPlaying={isPlaying} bpm={bpm * 2}>
+					<Track
+						steps={chords}
+						// Callback triggers on every step
+						onStepPlay={(stepNotes, index) => {
+							setCurrentStepIndex(index);
 						}}
-					/>
-				</Track>
-				<Track>
-					<Instrument type="sampler" samples={AcousticGrandPiano} notes={previewNote} />
-				</Track>
-			</Song>
+					>
+						<Instrument
+							type="sampler"
+							samples={AcousticGrandPiano}
+							envelope={{
+								attack: 0.3,
+								release: 0.3
+							}}
+						/>
+					</Track>
+					<Track>
+						<Instrument type="sampler" samples={AcousticGrandPiano} notes={previewNote} />
+					</Track>
+				</Song>
+			</Container>
 		</Flex>
 	);
 };
 
 // // Simplified Piano Roll
-// export const PianoRoll = () => {
-
-// 	return (
-// 		<Container>
-// 			<Button onClick={() => setIsPlaying(!isPlaying)}>{isPlaying ? 'Stop' : 'Play'}</Button>
-
-// 			<PianoRollEditor currentStepIndex={currentStepIndex} />
-
-// 		</Container>
-// 	);
-// };
-
-// <Flex spacing={0} height="full" width="full" overflowX="hidden" overflowY="auto" flexDirection="row">
-// 			<VStack spacing={0}>
-// 				<HStack spacing={0}>
-// 					<Box
-// 						minWidth={cellWidth}
-// 						height={cellHeight}
-// 						bgColor="primary.500"
-// 						borderWidth="1px"
-// 						borderColor="primary.100"
-// 					/>
-
-// 				</HStack>
-// 				<NotesPanel width={cellWidth} height={cellHeight} setPreviewNote={setPreviewNote} />
-// 			</VStack>
-
-// 			<Flex spacing={0} width="full" overflowX="auto" flexDirection="column">
-// 				{/* <SimpleGrid spacing={0} columns={numCols}>
-// 					{[ ...Array(numRows * numCols) ].map((e2, i) => (
-// 						<Cell
-// 							key={i}
-// 							width={cellWidth}
-// 							height={cellHeight}
-// 							bgColor={colors[~~(i / numCols)]}
-// 							//onClick={OnCellClick(i % numCols, ~~(i / numCols))}
-// 						/>
-// 					))}
-// 				</SimpleGrid> */}
-// 			</Flex>
