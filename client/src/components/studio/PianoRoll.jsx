@@ -1,21 +1,13 @@
 import { useState, useEffect, Fragment } from 'react';
-import {
-	HStack,
-	VStack,
-	Container,
-	Box,
-	Flex,
-	SimpleGrid,
-	useBoolean,
-	useRadio,
-	useRadioGroup
-} from '@chakra-ui/react';
+import { HStack, VStack, Button, Container, Box, Flex, useRadioGroup } from '@chakra-ui/react';
 import { Song, Track, Instrument } from 'reactronica';
 import _ from 'lodash';
-import { AcousticGrandPiano } from '@Instruments/AcousticGrandPiano';
-// import { Grid, AutoSizer } from 'react-virtualized';
-import { StickyGrid } from '../StickyGrid';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import * as Tone from 'tone';
+
+import { AcousticGrandPiano } from '@Instruments/AcousticGrandPiano';
+import { StickyGrid } from '@Components/StickyGrid';
+import { ButtonRadio } from '@Components/ButtonRadio';
 
 const notes = [
 	'A0',
@@ -117,76 +109,8 @@ const notes = [
 const numRows = notes.length;
 const colors = notes.map((x) => (x.includes('#') ? 'primary.600' : 'primary.500'));
 
-const LabelPanel = ({ numNotes, width, height, currentStepIndex }) => {
-	return (
-		<HStack spacing={0}>
-			<Box minWidth={width} height={height} bgColor="primary.500" borderWidth="1px" borderColor="primary.100" />
-			{[ ...Array(numNotes) ].map((e2, x) => (
-				<TimeLabel
-					key={x}
-					noteNum={x}
-					divisions={4}
-					divisionWidth={width}
-					height={height}
-					currentStepIndex={currentStepIndex}
-				/>
-			))}
-		</HStack>
-	);
-};
-
-const TimeLabel = ({ noteNum, divisionWidth, divisions, currentStepIndex, height }) => {
-	return (
-		<HStack spacing={0} boxShadow="inner">
-			{[ ...Array(divisions) ].map((e2, x) => (
-				<Box
-					key={noteNum * divisions + x}
-					minWidth={divisionWidth}
-					height={height}
-					// fontSize="sm"
-					// textColor="white"
-					// textAlign="center"
-					// verticalAlign="middle"
-					// lineHeight={height}
-					bgColor={currentStepIndex === noteNum * divisions + x ? 'brand.accent2' : 'brand.accent1'}
-					borderWidth="1px"
-					borderColor="primary.100"
-				/>
-			))}
-		</HStack>
-	);
-};
-
-const ButtonRadio = (props) => {
-	const { getInputProps, getCheckboxProps } = useRadio(props);
-
-	const input = getInputProps();
-	const checkbox = getCheckboxProps();
-
-	return (
-		<Box as="label">
-			<input {...input} />
-			<Box
-				{...checkbox}
-				cursor="pointer"
-				borderWidth="1px"
-				borderColor="secondary.700"
-				_checked={{
-					bg: 'secondary.500',
-					color: 'white'
-				}}
-				padding={1}
-				textColor="white"
-				fontSize="sm"
-			>
-				{props.children}
-			</Box>
-		</Box>
-	);
-};
-
 const GridCell = ({ data, rowIndex, columnIndex, style }) => {
-	const found = data.chords[columnIndex].find((el) => el.name === notes[rowIndex]);
+	const found = data.notes[columnIndex].find((el) => el.note === notes[rowIndex]);
 
 	const HandleOnClick = () => {
 		data.onCellClick(columnIndex, rowIndex);
@@ -203,6 +127,7 @@ const GridCell = ({ data, rowIndex, columnIndex, style }) => {
 			overflowX="visible"
 			zIndex={999 - columnIndex}
 			style={style}
+			boxShadow={columnIndex % 8 === 7 ? '1px 0 0 gray;' : '0'}
 			borderBottom="1px solid gray"
 			borderRight="1px solid gray"
 		>
@@ -221,19 +146,15 @@ const GridCell = ({ data, rowIndex, columnIndex, style }) => {
 	);
 };
 
-export const PianoRoll = ({ isPlaying, bpm }) => {
+export const PianoRoll = ({ isPlaying, bpm, track, setNotes, numCols }) => {
 	const cellWidth = 8;
 	const noteWidth = cellWidth * 8;
 	const cellHeight = 6;
-	const numNotes = 8;
+
 	const options = [ 'Whole', '1/2', '1/4', '1/8' ];
 
 	const [ currentStepIndex, setCurrentStepIndex ] = useState(0);
-	const [ numCols, setNumCols ] = useState(numNotes * 8);
-	const [ chords, setChords ] = useState(Array(numCols).fill().map(() => Array(0)));
-	// const [ chordsIndex, setChordsIndex ] = useState(Array(numCols).fill().map(() => Array(0)));
-	const [ previewNote, setPreviewNote ] = useState(null);
-	const [ noteLength, setNoteLength ] = useState(cellWidth);
+
 	const [ noteDivisor, setNoteDivisor ] = useState(4);
 
 	const { getRootProps, getRadioProps } = useRadioGroup({
@@ -241,16 +162,12 @@ export const PianoRoll = ({ isPlaying, bpm }) => {
 		defaultValue: '1/4',
 		onChange: (value) => {
 			if (value === 'Whole') {
-				setNoteLength(cellWidth * 8);
 				setNoteDivisor(1);
 			} else if (value === '1/2') {
-				setNoteLength(cellWidth * 4);
 				setNoteDivisor(2);
 			} else if (value === '1/4') {
-				setNoteLength(cellWidth * 2);
 				setNoteDivisor(4);
 			} else if (value === '1/8') {
-				setNoteLength(cellWidth);
 				setNoteDivisor(8);
 			}
 		}
@@ -259,29 +176,38 @@ export const PianoRoll = ({ isPlaying, bpm }) => {
 	const group = getRootProps();
 
 	const OnCellClick = (column, row) => {
-		let currentColumn = chords[column];
-		currentColumn.push({ name: notes[row], duration: 60 * 4 / (bpm * noteDivisor), velocity: 1.0 });
-
-		let newChords = _.cloneDeep(chords);
-		newChords[column] = currentColumn;
-		setChords(newChords);
+		const trackNotes = track.notes;
+		let currentColumn = trackNotes[column];
+		currentColumn.push({ note: notes[row], duration: 60 * 4 / (bpm * noteDivisor), velocity: 1.0 });
+		let newNotes = _.cloneDeep(trackNotes);
+		newNotes[column] = currentColumn;
+		setNotes(newNotes);
+		console.log('hello');
 	};
 
 	// useEffect(
 	// 	() => {
-	// 		console.log(chords);
+	// 		console.log(notes);
 	// 	},
-	// 	[ chords ]
+	// 	[ notes ]
 	// );
 
 	const OnFilledCellClick = (column, row) => {
-		let newChords = _.cloneDeep(chords);
-		newChords[column] = chords[column].filter((el) => el.name !== notes[row]);
-		setChords(newChords);
+		let newNotes = _.cloneDeep(track.notes);
+		newNotes[column] = track.notes[column].filter((el) => el.note !== notes[row]);
+		setNotes(newNotes);
+	};
+
+	const OnKeyDown = (key) => {
+		track.sampler.triggerAttack([ key ]);
+	};
+
+	const OnKeyUp = (key) => {
+		track.sampler.triggerRelease([ key ]);
 	};
 
 	return (
-		<Flex flexDirection="column" height="full" width="full">
+		<Flex minHeight="50%" flexDirection="column" width="full" flexGrow="1" width="full">
 			<HStack
 				w="full"
 				height="20px"
@@ -302,6 +228,9 @@ export const PianoRoll = ({ isPlaying, bpm }) => {
 						);
 					})}
 				</HStack>
+				<Button size="sm" onClick={() => setNotes(Array(numCols).fill().map(() => Array(0)))}>
+					Clear
+				</Button>
 			</HStack>
 			<Container
 				height="full"
@@ -326,16 +255,27 @@ export const PianoRoll = ({ isPlaying, bpm }) => {
 							stickyWidth={150}
 							rowHeaderLabels={notes}
 							activeRowIndex={currentStepIndex}
-							itemData={{ onCellClick: OnCellClick, onFilledClick: OnFilledCellClick, chords: chords }}
+							onKeyDown={OnKeyDown}
+							onKeyUp={OnKeyUp}
+							itemData={{
+								onCellClick: OnCellClick,
+								onFilledClick: OnFilledCellClick,
+								notes: track.notes
+							}}
 						>
 							{GridCell}
 						</StickyGrid>
 					)}
 				</AutoSizer>
+			</Container>
+		</Flex>
+	);
+};
 
+/* 
 				<Song isPlaying={isPlaying} bpm={bpm * 2}>
 					<Track
-						steps={chords}
+						steps={notes}
 						// Callback triggers on every step
 						onStepPlay={(stepNotes, index) => {
 							setCurrentStepIndex(index);
@@ -353,10 +293,5 @@ export const PianoRoll = ({ isPlaying, bpm }) => {
 					<Track>
 						<Instrument type="sampler" samples={AcousticGrandPiano} notes={previewNote} />
 					</Track>
-				</Song>
-			</Container>
-		</Flex>
-	);
-};
-
+				</Song> */
 // // Simplified Piano Roll

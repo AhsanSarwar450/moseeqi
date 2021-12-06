@@ -1,6 +1,6 @@
-import { createContext, forwardRef, useState } from 'react';
+import { createContext, forwardRef } from 'react';
 import { FixedSizeGrid as Grid } from 'react-window';
-import { Box, Flex, HStack } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 
 const blackKeyWidth = 0.6;
 
@@ -153,12 +153,6 @@ const columnsBuilder = (minRow, maxRow, rowHeight, stickyWidth, labels) => {
 		let styles = pianoOctaveStyles[i % 12];
 		let keyHeight = rowHeight * styles.heightModifier;
 		let keyWidth = stickyWidth * styles.widthModifier;
-		// rows.push({
-		// 	height: rowHeight,
-		// 	width: stickyWidth,
-		// 	top: i * rowHeight,
-		// 	label: labels[i]
-		// });
 		rows.push({
 			height: keyHeight,
 			width: keyWidth,
@@ -208,7 +202,8 @@ const StickyHeader = ({ stickyHeight, stickyWidth, headerColumns }) => {
 	);
 };
 
-const StickyColumns = ({ rows, stickyHeight, stickyWidth }) => {
+const StickyColumns = ({ rows, stickyHeight, stickyWidth, onKeyDown, onKeyUp }) => {
+	// console.log(onClickCallback);
 	return (
 		<Box
 			zIndex={1000}
@@ -224,16 +219,19 @@ const StickyColumns = ({ rows, stickyHeight, stickyWidth }) => {
 					position="absolute"
 					paddingLeft="10px"
 					border="1px solid gray"
+					cursor="pointer"
+					userSelect="none"
+					onMouseDown={() => onKeyDown(label)}
+					onMouseUp={() => onKeyUp(label)}
 					justifyContent="right"
 					paddingRight="5px"
 					borderRadius="5px"
-					//borderRight="1px solid gray"
+					//boxShadow="lg"
 					style={style}
 					key={i}
 				>
 					{label}
 				</Flex>
-				// <Box style={style}>{pianoKeys[i % 12]}</Box>
 			))}
 		</Box>
 	);
@@ -252,7 +250,9 @@ const innerGridElementType = forwardRef(({ children, ...rest }, ref) => (
 			columnWidth,
 			rowHeight,
 			rowHeaderLabels,
-			activeRowIndex
+			activeRowIndex,
+			onKeyDown,
+			onKeyUp
 		}) => {
 			const [ minRow, maxRow, minColumn, maxColumn ] = getRenderedCursor(children); // TODO maybe there is more elegant way to get this
 			const headerColumns = headerBuilder(minColumn, maxColumn, columnWidth, stickyHeight, activeRowIndex);
@@ -267,7 +267,13 @@ const innerGridElementType = forwardRef(({ children, ...rest }, ref) => (
 			return (
 				<Box ref={ref} {...containerProps}>
 					<StickyHeader headerColumns={headerColumns} stickyHeight={stickyHeight} stickyWidth={stickyWidth} />
-					<StickyColumns rows={leftSideRows} stickyHeight={stickyHeight} stickyWidth={stickyWidth} />
+					<StickyColumns
+						rows={leftSideRows}
+						stickyHeight={stickyHeight}
+						stickyWidth={stickyWidth}
+						onKeyDown={onKeyDown}
+						onKeyUp={onKeyUp}
+					/>
 
 					<Box position="absolute" top={stickyHeight} left={stickyWidth}>
 						{children}
@@ -285,6 +291,8 @@ export const StickyGrid = ({
 	rowHeight,
 	rowHeaderLabels,
 	activeRowIndex,
+	onKeyDown,
+	onKeyUp,
 	children,
 	...rest
 }) => (
@@ -296,6 +304,8 @@ export const StickyGrid = ({
 			rowHeight,
 			rowHeaderLabels,
 			activeRowIndex,
+			onKeyDown,
+			onKeyUp,
 			headerBuilder,
 			columnsBuilder
 		}}

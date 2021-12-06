@@ -1,6 +1,6 @@
-const baseURL = 'http://localhost:3001/soundfonts/acoustic_grand_piano/';
+const baseURL = 'http://localhost:3001/soundfonts/acoustic_guitar_steel/';
 
-export const AcousticGrandPiano = {
+export const AcousticGuitarSteel = {
 	A0: baseURL + 'A0.mp3',
 	Bb0: baseURL + 'Bb0.mp3',
 	B0: baseURL + 'B0.mp3',
