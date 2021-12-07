@@ -1,4 +1,16 @@
-import { Box, Flex, Text, Button, Stack, Icon, Link, Popover, PopoverTrigger, PopoverContent } from '@chakra-ui/react';
+import {
+	Box,
+	Flex,
+	Text,
+	Button,
+	Stack,
+	Icon,
+	Link,
+	Spacer,
+	Popover,
+	PopoverTrigger,
+	PopoverContent
+} from '@chakra-ui/react';
 import { ChevronRightIcon } from '@chakra-ui/icons';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -14,24 +26,21 @@ export function Navbar() {
 				py={{ base: 2 }}
 				px={{ base: 4 }}
 				align={'center'}
+				justify="space-between"
 				paddingLeft={20}
 				paddingRight={20}
 				paddingTop={5}
 				paddingBottom={5}
 			>
-				<Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-					<Text textColor="white" fontFamily={'heading'}>
-						moseeqi
-					</Text>
+				<Text textColor="white" fontFamily={'heading'}>
+					moseeqi
+				</Text>
 
-					<Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-						<NavbarItems />
-					</Flex>
-				</Flex>
+				<NavbarItems />
 
-				<Stack flex={{ base: 1, md: 0 }} justify={'flex-end'} direction={'row'} spacing={6}>
+				<Stack flex={{ base: 1, md: 0 }} justify={'flex-end'} direction={'row'} spacing={5}>
 					<RouterLink to="/login">
-						<Button textColor="white" fontWeight={400} variant={'link'} href={'/login'} paddingTop="5px">
+						<Button colorScheme="secondary" variant="outline" size="sm" textColor="white ">
 							Login
 						</Button>
 					</RouterLink>
@@ -48,23 +57,25 @@ export function Navbar() {
 
 const NavbarItems = () => {
 	return (
-		<Stack direction={'row'} spacing={4}>
+		<Stack direction={'row'} spacing={10}>
 			{NAV_ITEMS.map((navItem) => (
 				<Box key={navItem.label}>
 					<Popover trigger={'hover'} placement={'bottom-start'}>
 						<PopoverTrigger>
-							<Link
-								p={2}
-								color="white"
-								fontSize={'sm'}
-								fontWeight={500}
-								_hover={{
-									textDecoration: 'none',
-									color: 'secondary.300'
-								}}
-							>
-								{navItem.label}
-							</Link>
+							<RouterLink to={navItem.href ? navItem.href : '#'}>
+								<Text
+									p={2}
+									color="white"
+									fontSize={'sm'}
+									fontWeight={500}
+									_hover={{
+										textDecoration: 'none',
+										color: 'secondary.300'
+									}}
+								>
+									{navItem.label}
+								</Text>
+							</RouterLink>
 						</PopoverTrigger>
 
 						{navItem.children && (
@@ -149,7 +160,7 @@ const NAV_ITEMS = [
 		]
 	},
 	{
-		label: 'Create',
-		href: '#'
+		label: 'Studio',
+		href: '/studio'
 	}
 ];

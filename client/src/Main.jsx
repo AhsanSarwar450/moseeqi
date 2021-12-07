@@ -7,6 +7,8 @@ import { User } from './routes/User';
 import { SignUpSuccess } from './routes/SignUpSuccess';
 import { Search } from './routes/Search';
 import { Profile } from './routes/Profile';
+import { Test3D } from './routes/Test3D';
+import { Studio } from './routes/Studio';
 
 export const Main = () => (
 	<Routes>
@@ -18,5 +20,7 @@ export const Main = () => (
 		<Route path="/signup_success" element={<SignUpSuccess />} />
 		<Route path="/search" element={<Search />} />
 		<Route path="/profile" element={<Profile />} />
+		<Route path="/studio" element={<Studio />} />
+		<Route path="/test3d" element={<Test3D />} />
 	</Routes>
 );
