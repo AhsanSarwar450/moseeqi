@@ -1,12 +1,12 @@
-import { Flex } from '@chakra-ui/react';
-import { useState, useEffect, useRef } from 'react';
+import { Flex, useDisclosure } from '@chakra-ui/react';
+import { useState, useEffect, useRef, Fragment } from 'react';
 import * as Tone from 'tone';
 
 import { PlayBackController } from '@Components/studio/PlaybackController';
 import { PianoRoll } from '@Components/studio/PianoRoll';
 import { TracksView } from '@Components/studio/TracksView';
 import { PropertiesPanel } from '@Components/studio/PropertiesPanel';
-
+import { WaitingModal } from '@Components/WaitingModal';
 import { Instruments, MusicNotes } from '@Instruments/Instruments';
 
 const numNotes = 4;
@@ -21,14 +21,19 @@ const testNotes = [
 export const Studio = () => {
 	const [ numCols, setNumCols ] = useState(numNotes * 8);
 	const [ isPlaying, setIsPlaying ] = useState(false);
+	const [ isInstrumentLoading, setIsInstrumentLoading ] = useState(0);
 	const [ tracks, setTracks ] = useState(() => {
+		setIsInstrumentLoading(1);
 		const initialState = [
 			{
 				instrument: Instruments[0],
 				notes: [],
 				sampler: new Tone.Sampler({
 					urls: Instruments[0].urls,
-					release: 1
+					release: 1,
+					onload: () => {
+						setIsInstrumentLoading(0);
+					}
 				}).toDestination()
 			}
 		];
@@ -39,10 +44,24 @@ export const Studio = () => {
 	const parts = useRef([]);
 	const [ isContextStarted, setIsContextStarted ] = useState(false);
 
+	const { isOpen, onOpen, onClose } = useDisclosure();
+
 	const StartAudioContext = async () => {
 		await Tone.start();
 		setIsContextStarted(true);
 	};
+
+	useEffect(
+		() => {
+			console.log(isInstrumentLoading);
+			if (isInstrumentLoading > 0) {
+				onOpen();
+			} else {
+				onClose();
+			}
+		},
+		[ isInstrumentLoading ]
+	);
 
 	useEffect(
 		() => {
@@ -75,7 +94,7 @@ export const Studio = () => {
 					}
 					Tone.Transport.start();
 				} else {
-					for (let index = 0; index < tracks.length; index++) {
+					for (let index = 0; index < parts.current.length; index++) {
 						parts.current[index].stop();
 					}
 					Tone.Transport.stop();
@@ -91,12 +110,17 @@ export const Studio = () => {
 
 	const AddTrack = (instrument) => {
 		let copy = [ ...tracks ];
+		setIsInstrumentLoading(1);
 		copy.push({
 			instrument: Instruments[instrument],
 			notes: [],
 			sampler: new Tone.Sampler({
 				urls: Instruments[instrument].urls,
-				release: 1
+				release: 1,
+				onload: () => {
+					//console.log(isInstrumentLoading);
+					setIsInstrumentLoading(0);
+				}
 			}).toDestination()
 		});
 		setTracks(copy);
@@ -109,27 +133,30 @@ export const Studio = () => {
 	};
 
 	return (
-		<Flex height="100vh" width="full" spacing={0} overflow="hidden" flexDirection="column">
-			<Flex width="100%" height="100%" flexDirection="row" overflow="hidden">
-				<PropertiesPanel />
+		<Fragment>
+			<Flex height="100vh" width="full" spacing={0} overflow="hidden" flexDirection="column">
+				<Flex width="100%" height="100%" flexDirection="row" overflow="hidden">
+					<PropertiesPanel />
 
-				<Flex height="100%" spacing={0} overflow="hidden" flexDirection="column" flexGrow="3">
-					<TracksView
-						tracks={tracks}
-						onAddTrack={AddTrack}
-						selected={selectedIndex}
-						setSelected={setSelectedIndex}
-					/>
-					<PianoRoll
-						isPlaying={isPlaying}
-						bpm={bpm}
-						track={tracks[selectedIndex]}
-						setNotes={SetNotes}
-						numCols={numCols}
-					/>
+					<Flex height="100%" spacing={0} overflow="hidden" flexDirection="column" flexGrow="3">
+						<TracksView
+							tracks={tracks}
+							onAddTrack={AddTrack}
+							selected={selectedIndex}
+							setSelected={setSelectedIndex}
+						/>
+						<PianoRoll
+							isPlaying={isPlaying}
+							bpm={bpm}
+							track={tracks[selectedIndex]}
+							setNotes={SetNotes}
+							numCols={numCols}
+						/>
+					</Flex>
 				</Flex>
+				<PlayBackController isPlaying={isPlaying} toggleIsPlaying={ToggleIsPlaying} setBPM={setBPM} />
 			</Flex>
-			<PlayBackController isPlaying={isPlaying} toggleIsPlaying={ToggleIsPlaying} setBPM={setBPM} />
-		</Flex>
+			<WaitingModal onClose={onClose} isOpen={isOpen} />
+		</Fragment>
 	);
 };

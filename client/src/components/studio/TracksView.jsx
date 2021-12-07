@@ -1,5 +1,7 @@
 import React, { Fragment } from 'react';
-import { Button, Box, VStack, HStack, useDisclosure } from '@chakra-ui/react';
+import { Button, IconButton, Box, VStack, HStack, useDisclosure } from '@chakra-ui/react';
+import { TiPlus } from 'react-icons/ti';
+import { BiDuplicate } from 'react-icons/bi';
 
 import { AddTrackModal } from '@Components/studio/AddTrackModal';
 import { Instruments, MusicNotes } from '@Instruments/Instruments';
@@ -15,10 +17,33 @@ export const TracksView = ({ tracks, onAddTrack, selected, setSelected }) => {
 
 	return (
 		<Fragment>
-			<VStack spacing={0} width="full" flexGrow="1" overflow="auto">
-				<Button onClick={onOpen} flexShrink="0">
-					Add
-				</Button>
+			<VStack spacing={0} width="full" flexGrow="1" overflow="auto" bgColor="primary.600">
+				<HStack
+					paddingLeft={5}
+					height="40px"
+					width="100%"
+					flexShrink={0}
+					justifyContent="flex-start"
+					bgColor="primary.500"
+				>
+					<IconButton
+						colorScheme="secondary"
+						size="sm"
+						aria-label="add-track"
+						icon={<TiPlus />}
+						onClick={onOpen}
+						flexShrink="0"
+						borderRadius="5px"
+					/>
+					<IconButton
+						colorScheme="secondary"
+						size="sm"
+						aria-label="duplicate-track"
+						icon={<BiDuplicate />}
+						flexShrink="0"
+						borderRadius="5px"
+					/>
+				</HStack>
 
 				{tracks.map((track, index) => (
 					<HStack
