@@ -1,6 +1,6 @@
 import { createContext, forwardRef } from 'react';
 import { FixedSizeGrid as Grid } from 'react-window';
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, Flex, HStack } from '@chakra-ui/react';
 
 const blackKeyWidth = 0.6;
 
@@ -252,7 +252,9 @@ const innerGridElementType = forwardRef(({ children, ...rest }, ref) => (
 			rowHeaderLabels,
 			activeRowIndex,
 			onKeyDown,
-			onKeyUp
+			onKeyUp,
+			onFilledNoteClick,
+			notes
 		}) => {
 			const [ minRow, maxRow, minColumn, maxColumn ] = getRenderedCursor(children); // TODO maybe there is more elegant way to get this
 			const headerColumns = headerBuilder(minColumn, maxColumn, columnWidth, stickyHeight, activeRowIndex);
@@ -263,7 +265,7 @@ const innerGridElementType = forwardRef(({ children, ...rest }, ref) => (
 				height: `${parseFloat(rest.style.height) + stickyHeight}px`
 			};
 			const containerProps = { ...rest, style: containerStyle };
-
+			console.log('In render');
 			return (
 				<Box ref={ref} {...containerProps}>
 					<StickyHeader headerColumns={headerColumns} stickyHeight={stickyHeight} stickyWidth={stickyWidth} />
@@ -277,6 +279,23 @@ const innerGridElementType = forwardRef(({ children, ...rest }, ref) => (
 
 					<Box position="absolute" top={stickyHeight} left={stickyWidth}>
 						{children}
+					</Box>
+					<Box position="absolute" top={stickyHeight} left={stickyWidth} bgColor="red" zIndex={600}>
+						{notes.map((note, index) => (
+							<Box
+								key={index}
+								height={rowHeight - 1}
+								position="absolute"
+								left={`${note.time * 60}px`}
+								top={`${note.noteIndex * rowHeight}px`}
+								width="60px"
+								borderRadius="5px"
+								borderWidth="1px"
+								borderColor="secondary.700"
+								bgColor="secondary.500"
+								onClick={() => onFilledNoteClick(index)}
+							/>
+						))}
 					</Box>
 				</Box>
 			);
@@ -293,6 +312,8 @@ export const StickyGrid = ({
 	activeRowIndex,
 	onKeyDown,
 	onKeyUp,
+	notes,
+	onFilledNoteClick,
 	children,
 	...rest
 }) => (
@@ -306,6 +327,8 @@ export const StickyGrid = ({
 			activeRowIndex,
 			onKeyDown,
 			onKeyUp,
+			notes,
+			onFilledNoteClick,
 			headerBuilder,
 			columnsBuilder
 		}}

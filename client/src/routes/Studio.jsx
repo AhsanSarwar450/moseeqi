@@ -17,11 +17,8 @@ export const Studio = () => {
 	const [ tracks, setTracks ] = useState([
 		{
 			instrument: Instruments[0],
-			notes: Array(numCols).fill().map(() => Array(0)),
-			sampler: new Tone.Sampler({
-				urls: Instruments[0].urls,
-				release: 1
-			}).toDestination()
+			notes: [],
+			sampler: null
 		}
 	]);
 	const [ bpm, setBPM ] = useState(120);
@@ -32,18 +29,24 @@ export const Studio = () => {
 		setIsPlaying(!isPlaying);
 	};
 
-	// useEffect(
-	// 	() => {
-	// 		console.log(tracks);
-	// 	},
-	// 	[ tracks ]
-	// );
+	useEffect(() => {
+		setTracks([
+			{
+				instrument: Instruments[0],
+				notes: [],
+				sampler: new Tone.Sampler({
+					urls: Instruments[0].urls,
+					release: 1
+				}).toDestination()
+			}
+		]);
+	}, []);
 
 	const AddTrack = (instrument) => {
 		let copy = [ ...tracks ];
 		copy.push({
 			instrument: Instruments[instrument],
-			notes: Array(numCols).fill().map(() => Array(0)),
+			notes: [],
 			sampler: new Tone.Sampler({
 				urls: Instruments[instrument].urls,
 				release: 1
@@ -56,6 +59,7 @@ export const Studio = () => {
 	const SetNotes = (notes) => {
 		let copy = [ ...tracks ];
 		copy[selectedIndex].notes = notes;
+		console.log('In Studio');
 		setTracks(copy);
 	};
 

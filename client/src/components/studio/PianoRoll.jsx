@@ -1,12 +1,12 @@
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, Fragment, memo } from 'react';
 import { HStack, VStack, Button, Container, Box, Flex, useRadioGroup } from '@chakra-ui/react';
 import { Song, Track, Instrument } from 'reactronica';
-import _ from 'lodash';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import * as Tone from 'tone';
+import { areEqual } from 'react-window';
 
 import { AcousticGrandPiano } from '@Instruments/AcousticGrandPiano';
-import { StickyGrid } from '@Components/StickyGrid';
+import { StickyGrid } from '@Components/studio/StickyGrid';
 import { ButtonRadio } from '@Components/ButtonRadio';
 
 const notes = [
@@ -110,39 +110,23 @@ const numRows = notes.length;
 const colors = notes.map((x) => (x.includes('#') ? 'primary.600' : 'primary.500'));
 
 const GridCell = ({ data, rowIndex, columnIndex, style }) => {
-	const found = data.notes[columnIndex].find((el) => el.note === notes[rowIndex]);
-
 	const HandleOnClick = () => {
 		data.onCellClick(columnIndex, rowIndex);
 	};
 
-	const HandleOnFilledClick = () => {
-		data.onFilledClick(columnIndex, rowIndex);
-	};
+	//console.log('Cell render!!!');
 
 	return (
 		<Box
-			onClick={found ? null : HandleOnClick}
+			onClick={HandleOnClick}
 			bgColor={colors[rowIndex]}
 			overflowX="visible"
-			zIndex={999 - columnIndex}
+			zIndex={500 - columnIndex}
 			style={style}
 			boxShadow={columnIndex % 8 === 7 ? '1px 0 0 gray;' : '0'}
 			borderBottom="1px solid gray"
 			borderRight="1px solid gray"
-		>
-			{found !== undefined ? (
-				<Box
-					borderRadius="5px"
-					borderWidth="1px"
-					borderColor="secondary.700"
-					height="100%"
-					width={`calc(${found.duration * 400}% + ${found.duration * 4}px - 1px)`}
-					bgColor="secondary.500"
-					onClick={HandleOnFilledClick}
-				/>
-			) : null}
-		</Box>
+		/>
 	);
 };
 
@@ -176,13 +160,16 @@ export const PianoRoll = ({ isPlaying, bpm, track, setNotes, numCols }) => {
 	const group = getRootProps();
 
 	const OnCellClick = (column, row) => {
-		const trackNotes = track.notes;
-		let currentColumn = trackNotes[column];
-		currentColumn.push({ note: notes[row], duration: 60 * 4 / (bpm * noteDivisor), velocity: 1.0 });
-		let newNotes = _.cloneDeep(trackNotes);
-		newNotes[column] = currentColumn;
-		setNotes(newNotes);
-		console.log('hello');
+		let copy = [ ...track.notes ];
+		copy.push({
+			time: column,
+			noteIndex: row,
+			note: notes[row],
+			duration: 60 * 4 / (bpm * noteDivisor),
+			velocity: 1.0
+		});
+		console.log('In Piano');
+		setNotes(copy);
 	};
 
 	// useEffect(
@@ -192,10 +179,10 @@ export const PianoRoll = ({ isPlaying, bpm, track, setNotes, numCols }) => {
 	// 	[ notes ]
 	// );
 
-	const OnFilledCellClick = (column, row) => {
-		let newNotes = _.cloneDeep(track.notes);
-		newNotes[column] = track.notes[column].filter((el) => el.note !== notes[row]);
-		setNotes(newNotes);
+	const OnFilledCellClick = (index) => {
+		let copy = [ ...track.notes ];
+		copy.splice(index, 1);
+		setNotes(copy);
 	};
 
 	const OnKeyDown = (key) => {
@@ -257,10 +244,10 @@ export const PianoRoll = ({ isPlaying, bpm, track, setNotes, numCols }) => {
 							activeRowIndex={currentStepIndex}
 							onKeyDown={OnKeyDown}
 							onKeyUp={OnKeyUp}
+							notes={track.notes}
+							onFilledNoteClick={OnFilledCellClick}
 							itemData={{
-								onCellClick: OnCellClick,
-								onFilledClick: OnFilledCellClick,
-								notes: track.notes
+								onCellClick: OnCellClick
 							}}
 						>
 							{GridCell}
