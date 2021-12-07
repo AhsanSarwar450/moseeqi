@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Button, Box, VStack, HStack, useDisclosure } from '@chakra-ui/react';
 
 import { AddTrackModal } from '@Components/studio/AddTrackModal';
-import { Instruments } from '@Instruments/Instruments';
+import { Instruments, MusicNotes } from '@Instruments/Instruments';
 
 export const TracksView = ({ tracks, onAddTrack, selected, setSelected }) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -23,7 +23,7 @@ export const TracksView = ({ tracks, onAddTrack, selected, setSelected }) => {
 				{tracks.map((track, index) => (
 					<HStack
 						borderBottom="1px solid gray"
-						height="80px"
+						height={`${MusicNotes.length}px`}
 						spacing={0}
 						width="full"
 						flexShrink="0"
@@ -46,9 +46,20 @@ export const TracksView = ({ tracks, onAddTrack, selected, setSelected }) => {
 							width="full"
 							bgColor="primary.700"
 							padding="5px"
+							position="relative"
 							onClick={() => setSelected(index)}
 						>
-							{/* {track.instrument} */}
+							{track.notes.map((note, index) => (
+								<Box
+									key={index}
+									bgColor="secondary.500"
+									position="absolute"
+									top={`${note.noteIndex}px`}
+									left={`${5 * note.time}px`}
+									width={`${5 * 8 / note.duration}px`}
+									height="1px"
+								/>
+							))}
 						</Box>
 					</HStack>
 				))}

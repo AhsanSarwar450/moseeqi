@@ -208,7 +208,7 @@ const StickyColumns = ({ rows, stickyHeight, stickyWidth, onKeyDown, onKeyUp }) 
 		<Box
 			zIndex={1000}
 			left={0}
-			background="black"
+			background="primary.600"
 			position="sticky"
 			top={stickyHeight}
 			width={stickyWidth}
@@ -265,9 +265,8 @@ const innerGridElementType = forwardRef(({ children, ...rest }, ref) => (
 				height: `${parseFloat(rest.style.height) + stickyHeight}px`
 			};
 			const containerProps = { ...rest, style: containerStyle };
-			console.log('In render');
 			return (
-				<Box ref={ref} {...containerProps}>
+				<Box ref={ref} {...containerProps} bgColor="primary.600">
 					<StickyHeader headerColumns={headerColumns} stickyHeight={stickyHeight} stickyWidth={stickyWidth} />
 					<StickyColumns
 						rows={leftSideRows}
@@ -280,15 +279,15 @@ const innerGridElementType = forwardRef(({ children, ...rest }, ref) => (
 					<Box position="absolute" top={stickyHeight} left={stickyWidth}>
 						{children}
 					</Box>
-					<Box position="absolute" top={stickyHeight} left={stickyWidth} bgColor="red" zIndex={600}>
+					<Box position="absolute" top={stickyHeight} left={stickyWidth} zIndex={600}>
 						{notes.map((note, index) => (
 							<Box
 								key={index}
-								height={rowHeight - 1}
+								height={`${rowHeight - 1}px`}
 								position="absolute"
 								left={`${note.time * 60}px`}
 								top={`${note.noteIndex * rowHeight}px`}
-								width="60px"
+								width={`${8 / note.duration * 60 - 1}px`}
 								borderRadius="5px"
 								borderWidth="1px"
 								borderColor="secondary.700"
