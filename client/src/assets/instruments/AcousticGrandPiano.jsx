@@ -1,4 +1,4 @@
-const baseURL = 'http://localhost:3001/soundfonts/acoustic_grand_piano/';
+const baseURL = '//gleitz.github.io/midi-js-soundfonts/FluidR3_GM/acoustic_grand_piano-mp3/';
 
 export const AcousticGrandPiano = {
 	A0: baseURL + 'A0.mp3',

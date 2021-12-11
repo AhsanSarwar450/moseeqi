@@ -226,6 +226,7 @@ const StickyColumns = ({ rows, stickyHeight, stickyWidth, onKeyDown, onKeyUp }) 
 					justifyContent="right"
 					paddingRight="5px"
 					borderRadius="5px"
+					fontSize="xs"
 					//boxShadow="lg"
 					style={style}
 					key={i}
@@ -282,6 +283,7 @@ const innerGridElementType = forwardRef(({ children, ...rest }, ref) => (
 					<Box position="absolute" top={stickyHeight} left={stickyWidth} zIndex={600}>
 						{notes.map((note, index) => (
 							<Box
+								cursor="url(https://icons.iconarchive.com/icons/fatcow/farm-fresh/32/draw-eraser-icon.png) -80 40, auto"
 								key={index}
 								height={`${rowHeight - 1}px`}
 								position="absolute"

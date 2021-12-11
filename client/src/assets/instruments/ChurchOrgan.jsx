@@ -1,6 +1,6 @@
-const baseURL = '//gleitz.github.io/midi-js-soundfonts/FluidR3_GM/acoustic_guitar_steel-mp3/';
+const baseURL = '//gleitz.github.io/midi-js-soundfonts/FluidR3_GM/church_organ-mp3/';
 
-export const AcousticGuitarSteel = {
+export const ChurchOrgan = {
 	A0: baseURL + 'A0.mp3',
 	Bb0: baseURL + 'Bb0.mp3',
 	B0: baseURL + 'B0.mp3',
