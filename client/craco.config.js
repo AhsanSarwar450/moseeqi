@@ -6,7 +6,8 @@ module.exports = {
 			'@': path.resolve(__dirname, 'src/'),
 			'@Components': path.resolve(__dirname, 'src/components'),
 			'@Instruments': path.resolve(__dirname, 'src/assets/instruments'),
-			'@Soundfonts': path.resolve(__dirname, 'src/assets/soundfonts')
+			'@Soundfonts': path.resolve(__dirname, 'src/assets/soundfonts'),
+			'@Themes': path.resolve(__dirname, 'src/themes')
 		}
 	}
 };

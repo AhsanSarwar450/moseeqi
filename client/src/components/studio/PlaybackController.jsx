@@ -8,7 +8,7 @@ import {
 } from '@chakra-ui/number-input';
 import { TiMediaPlay, TiMediaRewind, TiMediaFastForward, TiMediaPause, TiMediaStop } from 'react-icons/ti';
 
-export const PlayBackController = ({ isPlaying, toggleIsPlaying, setBPM }) => {
+export const PlayBackController = ({ playbackState, setPlaybackState, setBPM }) => {
 	return (
 		<HStack
 			height="20px"
@@ -23,17 +23,25 @@ export const PlayBackController = ({ isPlaying, toggleIsPlaying, setBPM }) => {
 				<IconButton aria-label="rewind" icon={<TiMediaRewind />} borderWidth={1} borderColor="secondary.700" />
 				<IconButton
 					aria-label="play"
-					icon={isPlaying ? <TiMediaPause /> : <TiMediaPlay />}
+					icon={playbackState === 2 ? <TiMediaPause /> : <TiMediaPlay />}
 					borderWidth={1}
 					borderColor="secondary.700"
-					onClick={toggleIsPlaying}
+					onClick={
+						playbackState === 2 || playbackState === 0 ? (
+							() => setPlaybackState(1)
+						) : (
+							() => setPlaybackState(2)
+						)
+					}
 				/>
+
 				<IconButton aria-label="stop" icon={<TiMediaStop />} borderWidth={1} borderColor="secondary.700" />
 				<IconButton
 					aria-label="fast-forward"
 					icon={<TiMediaFastForward />}
 					borderWidth={1}
 					borderColor="secondary.700"
+					onClick={() => setPlaybackState(0)}
 				/>
 			</ButtonGroup>
 

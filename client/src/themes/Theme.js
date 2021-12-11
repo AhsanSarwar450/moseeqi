@@ -19,6 +19,10 @@ const Theme = extendTheme({
 			accent2: '#53354A'
 		},
 
+		brandShades: {
+			priamryDark: '#0f101a'
+		},
+
 		primary: {
 			100: '#50568b',
 			200: '#474c7a',
