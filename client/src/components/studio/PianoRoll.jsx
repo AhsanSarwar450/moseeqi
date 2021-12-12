@@ -31,7 +31,7 @@ const GridCell = ({ data, rowIndex, columnIndex, style }) => {
 	);
 };
 
-export const PianoRoll = ({ track, addNote, removeNote, clearNotes, numCols }) => {
+export const PianoRoll = ({ track, addNote, moveNote, removeNote, clearNotes, numCols }) => {
 	const cellWidth = 8;
 	const noteWidth = cellWidth * 8;
 	const cellHeight = 6;
@@ -118,6 +118,7 @@ export const PianoRoll = ({ track, addNote, removeNote, clearNotes, numCols }) =
 							onKeyDown={OnKeyDown}
 							onKeyUp={OnKeyUp}
 							notes={track.notes}
+							moveNote={moveNote}
 							onFilledNoteClick={removeNote}
 							itemData={{
 								onCellClick: addNote,

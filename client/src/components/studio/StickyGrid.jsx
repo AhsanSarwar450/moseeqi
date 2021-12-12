@@ -1,6 +1,7 @@
-import { createContext, forwardRef } from 'react';
+import { createContext, forwardRef, useRef, useEffect } from 'react';
 import { FixedSizeGrid as Grid } from 'react-window';
 import { Box, Flex, HStack } from '@chakra-ui/react';
+import Draggable from 'react-draggable';
 
 const blackKeyWidth = 0.6;
 
@@ -241,6 +242,60 @@ const StickyColumns = ({ rows, stickyHeight, stickyWidth, onKeyDown, onKeyUp }) 
 const StickyGridContext = createContext();
 StickyGridContext.displayName = 'StickyGridContext';
 
+const FilledCell = ({ note, index, rowHeight, rowWidth, onClick, onDrag }) => {
+	const handleRef = useRef(null);
+
+	const HandleDrag = (event, data) => {
+		console.log(data.lastX / 60, data.lastY / rowHeight);
+		onDrag(index, data.lastX / 60, data.lastY / rowHeight);
+	};
+
+	useEffect(() => {
+		handleRef.current.addEventListener(
+			'contextmenu',
+			function(ev) {
+				ev.preventDefault();
+				return false;
+			},
+			false
+		);
+	}, []);
+
+	return (
+		<Draggable
+			handle={`.cellHandle${index}`}
+			defaultPosition={{ x: note.time * 60, y: note.noteIndex * rowHeight }}
+			position={null}
+			grid={[ 60, rowHeight ]}
+			scale={1}
+			onStop={HandleDrag}
+			nodeRef={handleRef}
+		>
+			<Box
+				ref={handleRef}
+				className={`cellHandle${index}`}
+				// cursor="url(https://icons.iconarchive.com/icons/fatcow/farm-fresh/32/draw-eraser-icon.png) -80 40, auto"
+				cursor="move"
+				//key={index}
+				height={`${rowHeight - 1}px`}
+				//position="absolute"
+				//left={`${note.time * 60}px`}
+				//top={`${note.noteIndex * rowHeight}px`}
+				width={`${8 / note.duration * 60 - 1}px`}
+				borderRadius="5px"
+				borderWidth="1px"
+				borderColor="secondary.700"
+				bgColor="secondary.500"
+				onContextMenu={() => {
+					onClick(index);
+					return false;
+				}}
+				//onClick={() => onClick(index)}
+			/>
+		</Draggable>
+	);
+};
+
 const innerGridElementType = forwardRef(({ children, ...rest }, ref) => (
 	<StickyGridContext.Consumer>
 		{({
@@ -254,6 +309,7 @@ const innerGridElementType = forwardRef(({ children, ...rest }, ref) => (
 			activeRowIndex,
 			onKeyDown,
 			onKeyUp,
+			moveNote,
 			onFilledNoteClick,
 			notes
 		}) => {
@@ -266,6 +322,7 @@ const innerGridElementType = forwardRef(({ children, ...rest }, ref) => (
 				height: `${parseFloat(rest.style.height) + stickyHeight}px`
 			};
 			const containerProps = { ...rest, style: containerStyle };
+
 			return (
 				<Box ref={ref} {...containerProps} bgColor="primary.600">
 					<StickyHeader headerColumns={headerColumns} stickyHeight={stickyHeight} stickyWidth={stickyWidth} />
@@ -282,19 +339,13 @@ const innerGridElementType = forwardRef(({ children, ...rest }, ref) => (
 					</Box>
 					<Box position="absolute" top={stickyHeight} left={stickyWidth} zIndex={600}>
 						{notes.map((note, index) => (
-							<Box
-								cursor="url(https://icons.iconarchive.com/icons/fatcow/farm-fresh/32/draw-eraser-icon.png) -80 40, auto"
+							<FilledCell
 								key={index}
-								height={`${rowHeight - 1}px`}
-								position="absolute"
-								left={`${note.time * 60}px`}
-								top={`${note.noteIndex * rowHeight}px`}
-								width={`${8 / note.duration * 60 - 1}px`}
-								borderRadius="5px"
-								borderWidth="1px"
-								borderColor="secondary.700"
-								bgColor="secondary.500"
-								onClick={() => onFilledNoteClick(index)}
+								note={note}
+								index={index}
+								rowHeight={rowHeight}
+								onClick={onFilledNoteClick}
+								onDrag={moveNote}
 							/>
 						))}
 					</Box>
@@ -314,6 +365,7 @@ export const StickyGrid = ({
 	onKeyDown,
 	onKeyUp,
 	notes,
+	moveNote,
 	onFilledNoteClick,
 	children,
 	...rest
@@ -329,6 +381,7 @@ export const StickyGrid = ({
 			onKeyDown,
 			onKeyUp,
 			notes,
+			moveNote,
 			onFilledNoteClick,
 			headerBuilder,
 			columnsBuilder
