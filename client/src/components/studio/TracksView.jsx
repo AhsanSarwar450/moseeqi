@@ -1,6 +1,6 @@
 import React, { Fragment, useRef, useEffect } from 'react';
-import { Button, IconButton, Box, VStack, HStack, useDisclosure } from '@chakra-ui/react';
-import { TiPlus } from 'react-icons/ti';
+import { Button, Flex, Text, IconButton, Box, VStack, HStack, useDisclosure } from '@chakra-ui/react';
+import { TiPlus, TiVolumeMute } from 'react-icons/ti';
 import { BiDuplicate } from 'react-icons/bi';
 import { Resizable } from 'react-resizable';
 import Ruler from '@scena/react-ruler';
@@ -12,26 +12,42 @@ import * as Tone from 'tone';
 import { useState } from 'react';
 import './Resizable.css';
 
-const TimeLineHandle = ({ seek, setSeek }) => {
+const TimeLineHandle = ({ playbackState }) => {
 	const seekHandleRef = useRef(null);
 	const dragging = useRef(false);
 
-	// useEffect(
-	// 	() => {
-	// 		if (isPlaying) {
+	const seekAnimationRef = useRef(null);
 
-	// 		} else {
-
-	// 		}
-	// 	},
-	// 	[ isPlaying ]
-	// );
+	const [ seek, setSeek ] = useState(0);
 
 	const HandleDrag = (event, data) => {
 		setSeek(data.lastX / 5);
 		Tone.Transport.seconds = data.lastX / 20;
 		dragging.current = false;
 	};
+
+	useEffect(
+		() => {
+			if (playbackState === 1) {
+				seekAnimationRef.current = requestAnimationFrame(function UpdateSeek() {
+					// let interval = (Date.now() - start)
+					setSeek(Tone.Transport.seconds * 4);
+					// console.log(seekHandleRef.current);
+					// if (!dragging.current) seekHandleRef.current.position = Tone.Transport.seconds * 4;
+					// else seekHandleRef.current.position = null;
+					seekAnimationRef.current = requestAnimationFrame(UpdateSeek);
+				});
+			} else if (playbackState === 0) {
+				// Stop
+				setSeek(0);
+				cancelAnimationFrame(seekAnimationRef.current);
+			} else if (playbackState === 2) {
+				//Pause
+				cancelAnimationFrame(seekAnimationRef.current);
+			}
+		},
+		[ playbackState ]
+	);
 
 	return (
 		<Draggable
@@ -49,7 +65,7 @@ const TimeLineHandle = ({ seek, setSeek }) => {
 			{/* <div className="handle">Drag from here</div> */}
 			<Box
 				ref={seekHandleRef}
-				zIndex={1500}
+				zIndex={700}
 				position="absolute"
 				bgColor="brand.accent2"
 				//left={`${300 + seek}px`}
@@ -69,22 +85,81 @@ const TimeLineHandle = ({ seek, setSeek }) => {
 	);
 };
 
+const Meter = ({ width, meter, fillColor, bgColor, borderColor, borderWidth }) => {
+	const meterAnimationRef = useRef(null);
+	const metersRef = useRef([]);
+	// const maxHeight =
+
+	useEffect(() => {
+		meterAnimationRef.current = requestAnimationFrame(function animate() {
+			const values = meter.getValue();
+
+			if (meter.channels > 1) {
+				for (let index = 0; index < values.length; index++) {
+					metersRef.current[index].style.height = `${values[index] + 100}%`;
+				}
+			} else {
+				metersRef.current[0].style.height = `${values + 100}%`;
+			}
+
+			//	metersRef.current.style.height = `${meter.getValue() + 100}%`;
+
+			meterAnimationRef.current = requestAnimationFrame(animate);
+		});
+		return () => {
+			cancelAnimationFrame(meterAnimationRef.current);
+		};
+	}, []);
+
+	useEffect(
+		() => {
+			metersRef.current = metersRef.current.slice(0, meter.channels);
+		},
+		[ meter ]
+	);
+
+	return (
+		<HStack top={1} spacing={1} position="absolute" bottom={1} right={1}>
+			{[ ...Array(meter.channels) ].map((channel, i) => (
+				<Box
+					height="100%"
+					width={width}
+					bgColor={bgColor}
+					position="relative"
+					borderColor={borderColor}
+					borderWidth={borderWidth}
+					key={i}
+					//id={`meter${i}`}
+				>
+					<Box
+						ref={(el) => (metersRef.current[i] = el)}
+						position="absolute"
+						bottom={0}
+						// height={`${meterHeight + 100}%`}
+						width="100%"
+						bgColor={fillColor}
+					/>
+				</Box>
+			))}
+		</HStack>
+	);
+};
+
 export const TracksView = ({
-	isPlaying,
+	playbackState,
 	tracks,
 	onAddTrack,
 	selected,
 	setSelected,
 	activeWidth,
 	setActiveWidth,
-	seek,
-	setSeek
+	setStopTime,
+	toggleMute
 }) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const timeScale = useRef(null);
 
 	useEffect(() => {
-		timeScale.current.resize();
 		window.addEventListener('resize', () => {
 			timeScale.current.resize();
 		});
@@ -97,6 +172,10 @@ export const TracksView = ({
 
 	const OnSetActiveWidth = (event, { element, size, handle }) => {
 		setActiveWidth(size.width);
+	};
+
+	const OnResizeStop = (event, { element, size, handle }) => {
+		setStopTime(size.width / 20);
 	};
 
 	return (
@@ -130,7 +209,7 @@ export const TracksView = ({
 						/>
 					</HStack>
 					<Box height="full" width="full" padding="0px">
-						<TimeLineHandle seek={seek} setSeek={setSeek} />
+						<TimeLineHandle playbackState={playbackState} />
 						<Ruler type="horizontal" unit={1} zoom={20} ref={timeScale} />
 					</Box>
 				</HStack>
@@ -144,16 +223,56 @@ export const TracksView = ({
 						width="full"
 						key={index}
 					>
-						<Box
+						<Flex
 							height="full"
 							color="white"
 							padding={1}
 							width="300px"
 							bgColor={selected === index ? 'secondary.500' : 'primary.500'}
 							onClick={() => setSelected(index)}
+							flexDirection="row"
+							position="relative"
 						>
-							{track.name}
-						</Box>
+							<VStack alignItems="flex-start">
+								<Text paddingLeft="5px" color="white">
+									{track.name}
+								</Text>
+
+								<HStack>
+									<Button
+										width="20px"
+										borderColor="secondary.700"
+										borderWidth="1px"
+										colorScheme="secondary"
+										size="xs"
+										flexShrink="0"
+										borderRadius="5px"
+										onClick={() => toggleMute(index)}
+									>
+										M
+									</Button>
+									<Button
+										width="20px"
+										borderColor="secondary.700"
+										borderWidth="1px"
+										colorScheme="secondary"
+										size="xs"
+										flexShrink="0"
+										borderRadius="5px"
+									>
+										S
+									</Button>
+								</HStack>
+							</VStack>
+							<Meter
+								width="10px"
+								meter={track.meter}
+								bgColor="brand.primary"
+								fillColor="brand.accent1"
+								borderColor="primary.700"
+								borderWidth="1px"
+							/>
+						</Flex>
 						<Box
 							height="full"
 							color="white"
@@ -171,6 +290,7 @@ export const TracksView = ({
 								bgColor="primary.700"
 								width={activeWidth}
 								onResize={OnSetActiveWidth}
+								onResizeStop={OnResizeStop}
 								axis="x"
 								draggableOpts={{ grid: [ 5, 5 ] }}
 								resizeHandles={[ 'e' ]}

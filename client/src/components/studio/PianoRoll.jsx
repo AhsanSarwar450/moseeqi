@@ -60,31 +60,6 @@ export const PianoRoll = ({ track, addNote, removeNote, clearNotes, numCols }) =
 
 	const group = getRootProps();
 
-	// const OnCellClick = (column, row) => {
-	// 	let copy = [ ...track.notes ];
-	// 	copy.push({
-	// 		time: column,
-	// 		noteIndex: row,
-	// 		note: MusicNotes[row],
-	// 		duration: noteDivisor,
-	// 		velocity: 1.0
-	// 	});
-	// 	setNotes(copy);
-	// };
-
-	// useEffect(
-	// 	() => {
-	// 		console.log(notes);
-	// 	},
-	// 	[ notes ]
-	// );
-
-	// const OnFilledCellClick = (index) => {
-	// 	let copy = [ ...track.notes ];
-	// 	copy.splice(index, 1);
-	// 	setNotes(copy);
-	// };
-
 	const OnKeyDown = (key) => {
 		track.sampler.triggerAttack([ key ]);
 	};

@@ -23,25 +23,33 @@ export const PlayBackController = ({ playbackState, setPlaybackState, setBPM }) 
 				<IconButton aria-label="rewind" icon={<TiMediaRewind />} borderWidth={1} borderColor="secondary.700" />
 				<IconButton
 					aria-label="play"
-					icon={playbackState === 2 ? <TiMediaPause /> : <TiMediaPlay />}
+					icon={<TiMediaPlay />}
 					borderWidth={1}
+					isDisabled={playbackState === 1}
 					borderColor="secondary.700"
-					onClick={
-						playbackState === 2 || playbackState === 0 ? (
-							() => setPlaybackState(1)
-						) : (
-							() => setPlaybackState(2)
-						)
-					}
+					onClick={() => setPlaybackState(1)}
 				/>
-
-				<IconButton aria-label="stop" icon={<TiMediaStop />} borderWidth={1} borderColor="secondary.700" />
+				<IconButton
+					aria-label="pause"
+					icon={<TiMediaPause />}
+					borderWidth={1}
+					isDisabled={playbackState === 2}
+					borderColor="secondary.700"
+					onClick={() => setPlaybackState(2)}
+				/>
+				<IconButton
+					aria-label="stop"
+					icon={<TiMediaStop />}
+					borderWidth={1}
+					isDisabled={playbackState === 0}
+					borderColor="secondary.700"
+					onClick={() => setPlaybackState(0)}
+				/>
 				<IconButton
 					aria-label="fast-forward"
 					icon={<TiMediaFastForward />}
 					borderWidth={1}
 					borderColor="secondary.700"
-					onClick={() => setPlaybackState(0)}
 				/>
 			</ButtonGroup>
 

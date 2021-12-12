@@ -13,38 +13,46 @@ import { Instruments, MusicNotes } from '@Instruments/Instruments';
 export const Studio = () => {
 	//const [ numCols, setNumCols ] = useState(40);
 	const [ playbackState, setPlaybackState ] = useState(0);
-	const [ prePlaybackState, setPrevPlaybackState ] = useState(0);
-	const [ seek, setSeek ] = useState(0);
 	const [ activeWidth, setActiveWidth ] = useState(5 * 40);
+	const [ stopTime, setStopTime ] = useState(activeWidth / 20);
 	const [ isInstrumentLoading, setIsInstrumentLoading ] = useState(0);
-	const seekInterval = useRef(null);
 	const [ tracks, setTracks ] = useState(() => {
 		setIsInstrumentLoading(1);
+		const instrument = Instruments[0];
+		const meter = new Tone.Meter();
 		const initialState = [
 			{
-				name: Instruments[0].name,
-				instrument: Instruments[0],
+				name: instrument.name,
+				instrument: instrument,
 				notes: [],
 				sampler: new Tone.Sampler({
-					urls: Instruments[0].urls,
-					release: Instruments[0].release,
-					attack: Instruments[0].attack,
+					urls: instrument.urls,
+					release: instrument.release,
+					attack: instrument.attack,
 					onload: () => {
 						setIsInstrumentLoading(0);
 					}
-				}).toDestination()
+				})
+					.toDestination()
+					.connect(meter),
+				meter: meter
 			}
 		];
 		return initialState;
 	});
 	const [ bpm, setBPM ] = useState(120);
 	const [ selectedIndex, setSelectedIndex ] = useState(0);
+	const [ isContextStarted, setIsContextStarted ] = useState(false);
+	const needToAddPart = useRef(false);
 	const parts = useRef([
 		new Tone.Part((time, value) => {
+			// const activeCells = activeWidth / 5;
+			// console.log(activeCells);
+			// if (value.time <= activeCells) {
 			tracks.at(-1).sampler.triggerAttackRelease(value.note, value.duration, time, value.velocity);
-		}, [])
+			//}
+		}, []).start()
 	]);
-	const [ isContextStarted, setIsContextStarted ] = useState(false);
 
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -52,6 +60,17 @@ export const Studio = () => {
 		await Tone.start();
 		setIsContextStarted(true);
 	};
+
+	useEffect(
+		() => {
+			console.log(stopTime);
+			parts.current.forEach((part) => {
+				part.cancel(0.1);
+				part.stop(stopTime);
+			});
+		},
+		[ stopTime ]
+	);
 
 	useEffect(
 		() => {
@@ -69,72 +88,46 @@ export const Studio = () => {
 			if (!isContextStarted) StartAudioContext();
 			else {
 				if (playbackState === 1) {
-					//
-
-					for (let index = 0; index < tracks.length; index++) {
-						// const activeCells = activeWidth / 5;
-						// parts.current.push(
-						// 	new Tone.Part(
-						// 		(time, value) => {
-						// 			tracks[index].sampler.triggerAttackRelease(
-						// 				value.note,
-						// 				value.duration,
-						// 				time,
-						// 				value.velocity
-						// 			);
-						// 		},
-						// 		tracks[index].notes.filter((value) => value.time <= activeCells).map((value) => ({
-						// 			time: value.time * 0.25,
-						// 			note: value.note,
-						// 			duration:
-						// 				value.time + 8 / value.duration < activeCells
-						// 					? `${value.duration}n`
-						// 					: `${8 / (activeCells - value.time)}n`,
-						// 			velocity: value.velocity
-						// 		}))
-						// 	)
-						// );
-
-						parts.current[index].start();
-					}
 					Tone.Transport.start();
-					const id = setInterval(() => {
-						setSeek(Tone.Transport.seconds * 4);
-					}, 66);
-					seekInterval.current = id;
 				} else if (playbackState === 0) {
 					// Stop
-					for (let index = 0; index < parts.current.length; index++) {
-						parts.current[index].stop();
-					}
 					Tone.Transport.stop();
-					clearInterval(seekInterval.current);
+					Tone.Transport.seconds = 0;
 				} else if (playbackState === 2) {
 					//Pause
 					Tone.Transport.pause();
-					clearInterval(seekInterval.current);
 				}
+
+				const HandleKeyboardEvent = (event) => {
+					if (event.keyCode === 32) {
+						if (playbackState === 0) setPlaybackState(1);
+						else if (playbackState === 2) setPlaybackState(1);
+						else if (playbackState === 1) setPlaybackState(2);
+					}
+				};
+
+				window.addEventListener('keydown', HandleKeyboardEvent);
+				return () => {
+					window.removeEventListener('keydown', HandleKeyboardEvent);
+				};
 			}
-			setPrevPlaybackState(playbackState);
 		},
 		[ playbackState, isContextStarted ]
 	);
 
-	// useEffect(
-	// 	() => {
-	// 		console.log(Tone.Transport.position, playbackPosition / 4);
-	// 		//console.log('transport position new ', Tone.Transport.seconds);
-	// 	},
-	// 	[ playbackPosition ]
-	// );
-
-	useEffect(() => {
-		//AddTrack(0);
-		window.addEventListener('keydown', HandleKeyboardEvent);
-		return () => {
-			window.removeEventListener('keydown', HandleKeyboardEvent);
-		};
-	}, []);
+	useEffect(
+		() => {
+			if (needToAddPart.current) {
+				parts.current.push(
+					new Tone.Part((time, value) => {
+						tracks.at(-1).sampler.triggerAttackRelease(value.note, value.duration, time, value.velocity);
+					}, []).start()
+				);
+				needToAddPart.current = false;
+			}
+		},
+		[ tracks ]
+	);
 
 	const SetRelease = (value) => {
 		tracks[selectedIndex].sampler.release = value;
@@ -145,8 +138,11 @@ export const Studio = () => {
 	};
 
 	const AddTrack = (instrument) => {
+		Tone.Transport.stop();
+		Tone.Transport.seconds = 0;
 		let copy = [ ...tracks ];
 		setIsInstrumentLoading(1);
+		const meter = new Tone.Meter();
 		copy.push({
 			name: Instruments[instrument].name,
 			instrument: Instruments[instrument],
@@ -156,17 +152,15 @@ export const Studio = () => {
 				release: Instruments[instrument].release,
 				attack: Instruments[instrument].attack,
 				onload: () => {
-					//console.log(isInstrumentLoading);
 					setIsInstrumentLoading(0);
 				}
-			}).toDestination()
+			})
+				.toDestination()
+				.connect(meter),
+			meter: meter
 		});
 		setTracks(copy);
-		parts.current.push(
-			new Tone.Part((time, value) => {
-				tracks.at(-1).sampler.triggerAttackRelease(value.note, value.duration, time, value.velocity);
-			}, [])
-		);
+		needToAddPart.current = true;
 	};
 
 	const AddNote = (column, row, divisor) => {
@@ -186,7 +180,6 @@ export const Studio = () => {
 			duration: `${divisor}n`,
 			velocity: 1.0
 		};
-		console.log(parts.current);
 		parts.current[selectedIndex].add(partNote);
 	};
 
@@ -210,6 +203,7 @@ export const Studio = () => {
 			};
 			parts.current[selectedIndex].add(partNote);
 		});
+		//console.log(parts.current);
 	};
 
 	const ClearNotes = () => {
@@ -219,24 +213,13 @@ export const Studio = () => {
 		setTracks(copy);
 	};
 
-	const HandleKeyboardEvent = (event) => {
-		if (event.keyCode === 32) {
-			if (playbackState === 0) setPlaybackState(1);
-			if (playbackState === 2) setPlaybackState(1);
-			else if (playbackState === 1) setPlaybackState(2);
-		}
+	const ToggleMuteAtIndex = (index) => {
+		parts.current[index].mute = !parts.current[index].mute;
 	};
 
 	return (
 		<Fragment>
-			<Flex
-				onKeyPress={HandleKeyboardEvent}
-				height="100vh"
-				width="full"
-				spacing={0}
-				overflow="hidden"
-				flexDirection="column"
-			>
+			<Flex height="100vh" width="full" spacing={0} overflow="hidden" flexDirection="column">
 				<Flex width="100%" height="100%" flexDirection="row" overflow="hidden">
 					<Splitter initialSizes={[ 20, 80 ]}>
 						<PropertiesPanel
@@ -258,8 +241,8 @@ export const Studio = () => {
 									setSelected={setSelectedIndex}
 									activeWidth={activeWidth}
 									setActiveWidth={setActiveWidth}
-									seek={seek}
-									setSeek={setSeek}
+									toggleMute={ToggleMuteAtIndex}
+									setStopTime={setStopTime}
 								/>
 								<PianoRoll
 									track={tracks[selectedIndex]}
@@ -277,3 +260,26 @@ export const Studio = () => {
 		</Fragment>
 	);
 };
+
+// const activeCells = activeWidth / 5;
+// parts.current.push(
+// 	new Tone.Part(
+// 		(time, value) => {
+// 			tracks[index].sampler.triggerAttackRelease(
+// 				value.note,
+// 				value.duration,
+// 				time,
+// 				value.velocity
+// 			);
+// 		},
+// 		tracks[index].notes.filter((value) => value.time <= activeCells).map((value) => ({
+// 			time: value.time * 0.25,
+// 			note: value.note,
+// 			duration:
+// 				value.time + 8 / value.duration < activeCells
+// 					? `${value.duration}n`
+// 					: `${8 / (activeCells - value.time)}n`,
+// 			velocity: value.velocity
+// 		}))
+// 	)
+// );
