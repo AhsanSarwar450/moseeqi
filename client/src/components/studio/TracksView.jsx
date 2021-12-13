@@ -243,6 +243,7 @@ export const TracksView = ({
 										width="20px"
 										borderColor="secondary.700"
 										borderWidth="1px"
+										bgColor={track.muted ? 'secondary.700' : 'secondary.500'}
 										colorScheme="secondary"
 										size="xs"
 										flexShrink="0"

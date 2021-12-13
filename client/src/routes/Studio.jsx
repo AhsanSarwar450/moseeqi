@@ -35,7 +35,8 @@ export const Studio = () => {
 				})
 					.toDestination()
 					.connect(meter),
-				meter: meter
+				meter: meter,
+				muted: false
 			}
 		];
 		return initialState;
@@ -194,6 +195,7 @@ export const Studio = () => {
 		let copy = [ ...tracks ];
 		copy[selectedIndex].notes.splice(index, 1);
 		setTracks(copy);
+
 		copy[selectedIndex].notes.forEach((note) => {
 			const partNote = {
 				time: note.time * 0.25,
@@ -212,7 +214,7 @@ export const Studio = () => {
 		let copy = [ ...tracks ];
 		const newNote = copy[selectedIndex].notes[index];
 		newNote.note = MusicNotes[row];
-		newNote.row = row;
+		newNote.noteIndex = row;
 		newNote.time = column;
 		copy[selectedIndex].notes[index] = newNote;
 		setTracks(copy);
@@ -238,6 +240,9 @@ export const Studio = () => {
 
 	const ToggleMuteAtIndex = (index) => {
 		parts.current[index].mute = !parts.current[index].mute;
+		let copy = [ ...tracks ];
+		copy[index].muted = !copy[index].muted;
+		setTracks(copy);
 	};
 
 	const ToggleSoloAtIndex = (index) => {

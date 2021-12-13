@@ -2,6 +2,7 @@ import { createContext, forwardRef, useRef, useEffect } from 'react';
 import { FixedSizeGrid as Grid } from 'react-window';
 import { Box, Flex, HStack } from '@chakra-ui/react';
 import Draggable from 'react-draggable';
+import { MusicNotes } from '@Instruments/Instruments';
 
 const blackKeyWidth = 0.6;
 
@@ -244,10 +245,12 @@ StickyGridContext.displayName = 'StickyGridContext';
 
 const FilledCell = ({ note, index, rowHeight, rowWidth, onClick, onDrag }) => {
 	const handleRef = useRef(null);
+	const dragging = useRef(false);
 
 	const HandleDrag = (event, data) => {
 		console.log(data.lastX / 60, data.lastY / rowHeight);
 		onDrag(index, data.lastX / 60, data.lastY / rowHeight);
+		dragging.current = false;
 	};
 
 	useEffect(() => {
@@ -263,22 +266,23 @@ const FilledCell = ({ note, index, rowHeight, rowWidth, onClick, onDrag }) => {
 
 	return (
 		<Draggable
-			handle={`.cellHandle${index}`}
+			handle={`.cellHandle${note.time}${note.noteindex}`}
 			defaultPosition={{ x: note.time * 60, y: note.noteIndex * rowHeight }}
-			position={null}
+			position={dragging.current ? null : { x: note.time * 60, y: note.noteIndex * rowHeight }}
 			grid={[ 60, rowHeight ]}
 			scale={1}
+			onStart={() => (dragging.current = true)}
 			onStop={HandleDrag}
 			nodeRef={handleRef}
 		>
 			<Box
 				ref={handleRef}
-				className={`cellHandle${index}`}
+				className={`cellHandle${note.time}${note.noteindex}`}
 				// cursor="url(https://icons.iconarchive.com/icons/fatcow/farm-fresh/32/draw-eraser-icon.png) -80 40, auto"
 				cursor="move"
 				//key={index}
 				height={`${rowHeight - 1}px`}
-				//position="absolute"
+				position="absolute"
 				//left={`${note.time * 60}px`}
 				//top={`${note.noteIndex * rowHeight}px`}
 				width={`${8 / note.duration * 60 - 1}px`}
@@ -291,7 +295,9 @@ const FilledCell = ({ note, index, rowHeight, rowWidth, onClick, onDrag }) => {
 					return false;
 				}}
 				//onClick={() => onClick(index)}
-			/>
+			>
+				{/* {`${index} ${note.time} ${MusicNotes[note.noteIndex]}`} */}
+			</Box>
 		</Draggable>
 	);
 };
@@ -355,23 +361,9 @@ const innerGridElementType = forwardRef(({ children, ...rest }, ref) => (
 	</StickyGridContext.Consumer>
 ));
 
-export const StickyGrid = ({
-	stickyHeight,
-	stickyWidth,
-	columnWidth,
-	rowHeight,
-	rowHeaderLabels,
-	activeRowIndex,
-	onKeyDown,
-	onKeyUp,
-	notes,
-	moveNote,
-	onFilledNoteClick,
-	children,
-	...rest
-}) => (
-	<StickyGridContext.Provider
-		value={{
+export const StickyGrid = forwardRef(
+	(
+		{
 			stickyHeight,
 			stickyWidth,
 			columnWidth,
@@ -383,12 +375,37 @@ export const StickyGrid = ({
 			notes,
 			moveNote,
 			onFilledNoteClick,
-			headerBuilder,
-			columnsBuilder
-		}}
-	>
-		<Grid columnWidth={columnWidth} rowHeight={rowHeight} innerElementType={innerGridElementType} {...rest}>
-			{children}
-		</Grid>
-	</StickyGridContext.Provider>
+			children,
+			...rest
+		},
+		ref
+	) => (
+		<StickyGridContext.Provider
+			value={{
+				stickyHeight,
+				stickyWidth,
+				columnWidth,
+				rowHeight,
+				rowHeaderLabels,
+				activeRowIndex,
+				onKeyDown,
+				onKeyUp,
+				notes,
+				moveNote,
+				onFilledNoteClick,
+				headerBuilder,
+				columnsBuilder
+			}}
+		>
+			<Grid
+				ref={ref}
+				columnWidth={columnWidth}
+				rowHeight={rowHeight}
+				innerElementType={innerGridElementType}
+				{...rest}
+			>
+				{children}
+			</Grid>
+		</StickyGridContext.Provider>
+	)
 );
