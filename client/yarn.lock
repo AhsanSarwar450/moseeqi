@@ -4924,7 +4924,7 @@
     "whatwg-mimetype" "^2.3.0"
     "whatwg-url" "^8.0.0"
 
-"debounce@^1.2.0":
+"debounce@^1.2.1":
   "integrity" "sha512-XRRe6Glud4rd/ZGQfiV1ruXSfbvfJedlV9Y6zOlP+2K04vBYiJEte6stfFkCP03aMnY5tsipamumUjL14fofug=="
   "resolved" "https://registry.npmjs.org/debounce/-/debounce-1.2.1.tgz"
   "version" "1.2.1"
@@ -5876,11 +5876,6 @@
     "onetime" "^5.1.0"
     "signal-exit" "^3.0.2"
     "strip-final-newline" "^2.0.0"
-
-"exenv@^1.2.0":
-  "integrity" "sha1-KueOhdmJQVhnCwPUe+wfA72Ru50="
-  "resolved" "https://registry.npmjs.org/exenv/-/exenv-1.2.2.tgz"
-  "version" "1.2.2"
 
 "exit@^0.1.2":
   "integrity" "sha1-BjJjj42HfMghB9MKD/8aF8uhzQw="
@@ -8198,11 +8193,6 @@
   "resolved" "https://registry.npmjs.org/lodash._reinterpolate/-/lodash._reinterpolate-3.0.0.tgz"
   "version" "3.0.0"
 
-"lodash.debounce@^4.0.8":
-  "integrity" "sha1-gteb/zCmfEAF/9XiUVMArZyk168="
-  "resolved" "https://registry.npmjs.org/lodash.debounce/-/lodash.debounce-4.0.8.tgz"
-  "version" "4.0.8"
-
 "lodash.memoize@^4.1.2":
   "integrity" "sha1-vMbEmkKihA7Zl/Mj6tpezRguC/4="
   "resolved" "https://registry.npmjs.org/lodash.memoize/-/lodash.memoize-4.1.2.tgz"
@@ -8447,16 +8437,6 @@
   dependencies:
     "braces" "^3.0.1"
     "picomatch" "^2.0.5"
-
-"midi-sounds-react@^1.2.45":
-  "integrity" "sha512-G1kihA5H9T2UixX4lg8kYcur0rzvtM5Bsp4FJmbRWZ54CpqxF2Vhwy2n2WFbNoc/dcbncyML/wff1hNI6hQ5Cg=="
-  "resolved" "https://registry.npmjs.org/midi-sounds-react/-/midi-sounds-react-1.2.54.tgz"
-  "version" "1.2.54"
-  dependencies:
-    "react" "^16.2.0"
-    "react-dom" "^16.2.0"
-    "react-modal" "^3.1.10"
-    "webaudiofont" "^2.5.24"
 
 "miller-rabin@^4.0.0":
   "integrity" "sha512-115fLhvZVqWwHPbClyntxEVfVDfl9DLLTuJvq3g2O/Oxi8AiNouAHvDSzHS0viUJc+V5vm3eq91Xwqn9dp4jRA=="
@@ -10428,21 +10408,7 @@
     "strip-ansi" "6.0.0"
     "text-table" "0.2.0"
 
-"react-dial-knob@^1.3.0":
-  "integrity" "sha512-hmQy2Ifl9v3VjKmOAKfjG3TIa0o39IYOhZk9oV08kfaODN+gF9RGuEC3XX2TmSuTUs05wJsXezv67OqLQqPqBQ=="
-  "resolved" "https://registry.npmjs.org/react-dial-knob/-/react-dial-knob-1.3.0.tgz"
-  "version" "1.3.0"
-
-"react-dom@*", "react-dom@^15.0.0 || ^16.0.0 || ^17.0.0", "react-dom@^15.3.0 || ^16.0.0-alpha || ^17.0.0", "react-dom@^16.8.0 || 17.x", "react-dom@^17.0.2", "react-dom@>= 16.3.0", "react-dom@>=16.13", "react-dom@>=16.8", "react-dom@>=16.8 || ^17.0.0", "react-dom@>=16.8.0", "react-dom@>=16.8.6", "react-dom@>=17.0":
-  "integrity" "sha512-s4h96KtLDUQlsENhMn1ar8t2bEa+q/YAtj8pPPdIjPDGBDIVNsrD9aXNWqspUe6AzKCIG0C1HZZLqLV7qpOBGA=="
-  "resolved" "https://registry.npmjs.org/react-dom/-/react-dom-17.0.2.tgz"
-  "version" "17.0.2"
-  dependencies:
-    "loose-envify" "^1.1.0"
-    "object-assign" "^4.1.1"
-    "scheduler" "^0.20.2"
-
-"react-dom@^0.14.0 || ^15.0.0 || ^16 || ^17", "react-dom@^16.2.0":
+"react-dom@*", "react-dom@^15.0.0 || ^16.0.0 || ^17.0.0", "react-dom@^15.3.0 || ^16.0.0-alpha || ^17.0.0", "react-dom@^16.14.0", "react-dom@^16.8.0 || 17.x", "react-dom@>= 16.3.0", "react-dom@>=16.13", "react-dom@>=16.8", "react-dom@>=16.8 || ^17.0.0", "react-dom@>=16.8.0", "react-dom@>=16.8.6", "react-dom@>=17.0":
   "integrity" "sha512-1gCeQXDLoIqMgqD3IO2Ah9bnf0w9kzhwN5q4FGnHZ67hBm9yePzB5JJAIQCc8x3pFnNlwFq4RidZggNAAkzWWw=="
   "resolved" "https://registry.npmjs.org/react-dom/-/react-dom-16.14.0.tgz"
   "version" "16.14.0"
@@ -10459,6 +10425,11 @@
   dependencies:
     "clsx" "^1.1.1"
     "prop-types" "^15.6.0"
+
+"react-ds@^1.13.0":
+  "integrity" "sha512-LLqx0oITKDLkkvXhxJEDL1Ixh9HW05e6EB12T5DUn/TmiAwujIjgc5qDxuAwO5gCmbQc/hVx0sXJkLYFm5SFVg=="
+  "resolved" "https://registry.npmjs.org/react-ds/-/react-ds-1.13.0.tgz"
+  "version" "1.13.0"
 
 "react-error-overlay@^6.0.9":
   "integrity" "sha512-nQTTcUu+ATDbrSD1BZHr5kgSD4oF8OFjxun8uAaL8RwPBacGBNPf/yAuVVdx17N8XNzRDMrZ9XcKZHCjPW+9ew=="
@@ -10507,33 +10478,10 @@
   "resolved" "https://registry.npmjs.org/react-is/-/react-is-17.0.1.tgz"
   "version" "17.0.1"
 
-"react-lifecycles-compat@^3.0.0":
-  "integrity" "sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA=="
-  "resolved" "https://registry.npmjs.org/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz"
-  "version" "3.0.4"
-
 "react-merge-refs@^1.1.0":
   "integrity" "sha512-alTKsjEL0dKH/ru1Iyn7vliS2QRcBp9zZPGoWxUOvRGWPUYgjo+V01is7p04It6KhgrzhJGnIj9GgX8W4bZoCQ=="
   "resolved" "https://registry.npmjs.org/react-merge-refs/-/react-merge-refs-1.1.0.tgz"
   "version" "1.1.0"
-
-"react-modal@^3.1.10":
-  "integrity" "sha512-8surmulejafYCH9wfUmFyj4UfbSJwjcgbS9gf3oOItu4Hwd6ivJyVBETI0yHRhpJKCLZMUtnhzk76wXTsNL6Qg=="
-  "resolved" "https://registry.npmjs.org/react-modal/-/react-modal-3.14.4.tgz"
-  "version" "3.14.4"
-  dependencies:
-    "exenv" "^1.2.0"
-    "prop-types" "^15.7.2"
-    "react-lifecycles-compat" "^3.0.0"
-    "warning" "^4.0.3"
-
-"react-music-visualizer@^1.1.0":
-  "integrity" "sha512-/hbF2VOc7RmjEOWWqcIYmuerHJM9zVMzZOHYECUvfZj5YFUAy+7hva6EtNz1mS7gcJVxjYT5h2w6SBOBHRQgLA=="
-  "resolved" "https://registry.npmjs.org/react-music-visualizer/-/react-music-visualizer-1.1.0.tgz"
-  "version" "1.1.0"
-  dependencies:
-    "lodash.debounce" "^4.0.8"
-    "prop-types" "^15.7.2"
 
 "react-reconciler@^0.26.2":
   "integrity" "sha512-nK6kgY28HwrMNwDnMui3dvm3rCFjZrcGiuwLc5COUipBK5hWHLOxMJhSnSomirqWwjPBJKV1QcbkI0VJr7Gl1Q=="
@@ -10672,11 +10620,11 @@
   "version" "0.0.0-deprecated"
 
 "react-use-measure@^2.0.4":
-  "integrity" "sha512-7K2HIGaPMl3Q9ZQiEVjen3tRXl4UDda8LiTPy/QxP8dP2rl5gPBhf7mMH6MVjjRNv3loU7sNzey/ycPNnHVTxQ=="
-  "resolved" "https://registry.npmjs.org/react-use-measure/-/react-use-measure-2.0.4.tgz"
-  "version" "2.0.4"
+  "integrity" "sha512-nocZhN26cproIiIduswYpV5y5lQpSQS1y/4KuvUCjSKmw7ZWIS/+g3aFnX3WdBkyuGUtTLif3UTqnLLhbDoQig=="
+  "resolved" "https://registry.npmjs.org/react-use-measure/-/react-use-measure-2.1.1.tgz"
+  "version" "2.1.1"
   dependencies:
-    "debounce" "^1.2.0"
+    "debounce" "^1.2.1"
 
 "react-virtualized-auto-sizer@^1.0.6":
   "integrity" "sha512-7tQ0BmZqfVF6YYEWcIGuoR3OdYe8I/ZFbNclFlGOC3pMqunkYF/oL30NCjSGl9sMEb17AnzixDz98Kqc3N76HQ=="
@@ -10691,15 +10639,7 @@
     "@babel/runtime" "^7.0.0"
     "memoize-one" ">=3.1.1 <6"
 
-"react@*", "react@^15.0.0 || ^16.0.0 || ^17.0.0", "react@^15.3.0 || ^16.0.0 || ^17.0.0", "react@^15.3.0 || ^16.0.0-alpha || ^17.0.0", "react@^16.8.0 || ^17.0.0", "react@^16.8.0 || 17.x", "react@^17.0.1", "react@^17.0.2", "react@>= 16", "react@>= 16.3", "react@>= 16.3.0", "react@>=16", "react@>=16.13", "react@>=16.8", "react@>=16.8 || ^17.0.0", "react@>=16.8.0", "react@>=16.8.6", "react@>=17.0", "react@17.0.2":
-  "integrity" "sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA=="
-  "resolved" "https://registry.npmjs.org/react/-/react-17.0.2.tgz"
-  "version" "17.0.2"
-  dependencies:
-    "loose-envify" "^1.1.0"
-    "object-assign" "^4.1.1"
-
-"react@^0.14.0 || ^15.0.0 || ^16 || ^17", "react@^16.14.0", "react@^16.2.0":
+"react@*", "react@^^15.0.0-rc || ^15.0 || ^16.0", "react@^15.0.0 || ^16.0.0 || ^17.0.0", "react@^15.3.0 || ^16.0.0 || ^17.0.0", "react@^15.3.0 || ^16.0.0-alpha || ^17.0.0", "react@^16.14.0", "react@^16.8.0 || ^17.0.0", "react@^16.8.0 || 17.x", "react@^17.0.2", "react@>= 16", "react@>= 16.3", "react@>= 16.3.0", "react@>=16", "react@>=16.13", "react@>=16.8", "react@>=16.8 || ^17.0.0", "react@>=16.8.0", "react@>=16.8.6", "react@>=17.0":
   "integrity" "sha512-0X2CImDkJGApiAlcf0ODKIneSwBPhqJawOa5wCtKbu7ZECrmS26NvtSILynQ66cgkT/RJ4LidJOc3bUESwmU8g=="
   "resolved" "https://registry.npmjs.org/react/-/react-16.14.0.tgz"
   "version" "16.14.0"
@@ -12876,11 +12816,6 @@
   "integrity" "sha512-PFMKIY+bRSXlMxVAQ+m2aw9c/ioUYfDgrYot0YUa+/xa0sakubWhSDyxAKwzymvXVdF4CZI71g06W+mqhzu6ig=="
   "resolved" "https://registry.npmjs.org/web-vitals/-/web-vitals-1.1.2.tgz"
   "version" "1.1.2"
-
-"webaudiofont@^2.5.24":
-  "integrity" "sha512-xSz3zYtMJrudsH/8RF9S3RbEMYgafF8f5Iei1i5G0r4UU+fsmVac0y0CPeb+JTcYzxL9hHB5RbzYBcGIfUyq5g=="
-  "resolved" "https://registry.npmjs.org/webaudiofont/-/webaudiofont-2.7.1.tgz"
-  "version" "2.7.1"
 
 "webgl-constants@^1.1.1":
   "integrity" "sha512-LkBXKjU5r9vAW7Gcu3T5u+5cvSvh5WwINdr0C+9jpzVB41cjQAP5ePArDtk/WHYdVj0GefCgM73BA7FlIiNtdg=="
